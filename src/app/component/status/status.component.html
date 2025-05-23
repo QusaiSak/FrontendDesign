@@ -42,62 +42,67 @@
         </select>
       </div>
     }
-</div>
+  </div>
 
-  <!-- Adjusted padding and removed 'container' class for full width with padding -->
+  <!-- Updated table container with scrolling functionality -->
   <div class="px-6 py-4">
     <div class="flex overflow-hidden rounded-xl border border-[#e6d3d1] bg-[#fbf9f8]">
-      <div class="overflow-x-auto w-full">
-        <table class="w-full">
-          <thead>
-            <tr class="bg-[#fbf9f8]">
-              @for (header of title; track header.key) {
-                <th class="text-align px-4 py-3 text-left h-16 text-md font-medium leading-normal bg-[#759fd7] text-white min-w-[150px]"
-                    [class.w-60]="header.key === 'download'"
-                    [class.text-gray-900]="header.key === 'download'"
-                    [class.text-gray-900]="header.key !== 'download'">
-                  {{ header.label }}
-                </th>
-              }
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            @for(item of dataSt() | filterBydropdown: (currentFilters()) | filter: searchTerm(); track item.batchName) {
-              <tr class="hover:bg-gray-50">
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.verticalName }}</td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.hubName }}</td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.courseName }}</td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.catName }}</td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.batchName }}</td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.semester }}</td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.examType }}</td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.examCatType }}</td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
-                  {{ item.schedule | date:'medium' }}
-                </td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
-                  {{ item.questionPaperStatus}}
-                </td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
-                  {{ item.envelopeReceived}}
-                </td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
-                  {{ item.zipUploadCount }}
-                </td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
-                  {{ item.examinerId }}
-                </td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
-                  {{ item.examinerName}}
-                </td>
-                <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
-                  {{ item.paperCheckingStatus }}
-                </td>
-
+      <!-- Scrollable container with fixed height for more than 3 rows -->
+      <div class="w-full"
+           [class.max-h-120]="(dataSt() | filterBydropdown: (currentFilters()) | filter: searchTerm()).length > 4"
+           [class.overflow-y-auto]="(dataSt() | filterBydropdown: (currentFilters()) | filter: searchTerm()).length > 4">
+        <!-- Horizontal scroll wrapper for wide table -->
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="sticky top-0 z-10">
+              <tr class="bg-[#fbf9f8]">
+                @for (header of title; track header.key) {
+                  <th class="text-align px-4 py-3 text-left h-16 text-md font-medium leading-normal bg-[#759fd7] text-white min-w-[150px]"
+                      [class.w-60]="header.key === 'download'"
+                      [class.text-gray-900]="header.key === 'download'"
+                      [class.text-gray-900]="header.key !== 'download'">
+                    {{ header.label }}
+                  </th>
+                }
               </tr>
-            }
-          </tbody>
-        </table>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              @for(item of dataSt() | filterBydropdown: (currentFilters()) | filter: searchTerm(); track item.batchName) {
+                <tr class="hover:bg-gray-50">
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.verticalName }}</td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.hubName }}</td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.courseName }}</td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.catName }}</td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.batchName }}</td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.semester }}</td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.examType }}</td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">{{ item.examCatType }}</td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
+                    {{ item.schedule | date:'medium' }}
+                  </td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
+                    {{ item.questionPaperStatus}}
+                  </td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
+                    {{ item.envelopeReceived}}
+                  </td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
+                    {{ item.zipUploadCount }}
+                  </td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
+                    {{ item.examinerId }}
+                  </td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
+                    {{ item.examinerName}}
+                  </td>
+                  <td class="h-[72px] px-4 py-2 text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[150px]">
+                    {{ item.paperCheckingStatus }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

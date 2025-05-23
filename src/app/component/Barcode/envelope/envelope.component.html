@@ -1,6 +1,5 @@
 <div class="px-5 py-3 min-h-screen">
 
-
   <div class="px-6 py-4">
     <h2 class="text-3xl font-semibold text-gray-900 font-montserrat mb-6">Envelope Schedule Report</h2>
     <label class="flex flex-col min-w-40 h-12 w-full">
@@ -28,54 +27,58 @@
     </label>
   </div>
 
+  <div class="flex gap-3 px-6 py-4 flex-wrap pr-4">
+    @for (config of dropdownConfigs; track config.key) {
+      <div class="flex items-center gap-2">
+        <select
+          class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-xl pl-4 text-gray-900 font-montserrat text-sm font-medium leading-normal "
+          (change)="onFilterChange(config.key, $event)">
+          <option value="- Select -">{{config.label}}</option>
+          @for (option of dynamicUniqueOptions()[config.key]; track option) {
+            <option [value]="option">{{ option }}</option>
+          }
+        </select>
+      </div>
+    }
+  </div>
 
-    <div class="flex gap-3 px-6 py-4 flex-wrap pr-4">
-        @for (config of dropdownConfigs; track config.key) {
-          <div class="flex items-center gap-2">
-            <select
-              class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-xl pl-4 text-gray-900 font-montserrat text-sm font-medium leading-normal "
-              (change)="onFilterChange(config.key, $event)">
-              <option value="- Select -">{{config.label}}</option>
-              @for (option of dynamicUniqueOptions()[config.key]; track option) {
-                <option [value]="option">{{ option }}</option>
-              }
-            </select>
-          </div>
-        }
-    </div>
-
-
+  <!-- Updated table container with scrolling functionality -->
   <div class="px-6 py-4">
     <div class="flex overflow-hidden rounded-xl border border-[#e6d3d1] bg-[#fbf9f8]">
-    <table class="w-full">
-      <thead>
-        <tr class="bg-[#fbf9f8]">
-          @for (header of title; track header.key) {
-            <th class="text-align px-4 py-3 text-left h-16 w-96 text-md font-medium leading-normal bg-[#759fd7] text-white"
-                [class.w-60]="header.key === 'view'"
-                [class.text-gray-900]="header.key === 'view'"
-                [class.text-gray-900]="header.key !== 'view'">
-              {{ header.label }}
-            </th>
-          }
-        </tr>
-      </thead>
-      <tbody class="bg-white divide-y divide-gray-200">
-        @for(item of data() | filterBydropdown: (currentFilters()) | filter: searchTerm(); track item.batchName) {
-          <tr class="hover:bg-gray-50">
-            <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal ">{{ item.verticalName }}</td>
-            <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.hubName }}</td>
-            <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.courseName }}</td>
-            <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.batchName }}</td>
-            <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.semester }}</td>
-            <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.examType }}</td>
-            <td class="h-[72px] px-4 py-2 w-60 text-gray-900 font-montserrat text-sm font-bold leading-normal tracking-[0.015em]">
-              <a href="#">{{ item.view }}</a>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+      <!-- Scrollable container with fixed height for more than 3 rows -->
+      <div class="w-full"
+           [class.max-h-120]="(data() | filterBydropdown: (currentFilters()) | filter: searchTerm()).length > 4"
+           [class.overflow-y-auto]="(data() | filterBydropdown: (currentFilters()) | filter: searchTerm()).length > 4">
+        <table class="w-full">
+          <thead class="sticky top-0 z-10">
+            <tr class="bg-[#fbf9f8]">
+              @for (header of title; track header.key) {
+                <th class="text-align px-4 py-3 text-left h-16 w-96 text-md font-medium leading-normal bg-[#759fd7] text-white"
+                    [class.w-60]="header.key === 'view'"
+                    [class.text-gray-900]="header.key === 'view'"
+                    [class.text-gray-900]="header.key !== 'view'">
+                  {{ header.label }}
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for(item of data() | filterBydropdown: (currentFilters()) | filter: searchTerm(); track item.batchName) {
+              <tr class="hover:bg-gray-50">
+                <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal ">{{ item.verticalName }}</td>
+                <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.hubName }}</td>
+                <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.courseName }}</td>
+                <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.batchName }}</td>
+                <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.semester }}</td>
+                <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.examType }}</td>
+                <td class="h-[72px] px-4 py-2 w-60 text-gray-900 font-montserrat text-sm font-bold leading-normal tracking-[0.015em]">
+                  <a href="#">{{ item.view }}</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>

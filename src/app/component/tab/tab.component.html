@@ -1,0 +1,41 @@
+<div class="flex items-center gap-4 bg-[#e43e3e] text-white p-2">
+
+  <!-- Dropdown trigger -->
+  <div class="relative">
+    <button
+      (click)="toggleDropdown()"
+      class="flex items-center gap-2 px-4 py-2 text-white rounded-md hover:bg-[#df6462] transition-colors">
+      <img src="/hamburger-menu-svgrepo-com.svg" alt="Menu" class="h-5 w-5">
+      Menu
+    </button>
+
+    <!-- Dropdown options -->
+    <div
+      class="absolute left-0 mt-2 w-96 bg-white border border-gray-200 rounded-md shadow-lg z-50"
+      *ngIf="isDropdownOpen">
+      <div>
+        @for (item of Data(); track item.name) {
+          <div
+            (click)="selectMainItem(item)"
+            class="p-3 cursor-pointer hover:bg-[#E7EEF8] text-black transition-colors">
+            {{ item.name }}
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Active main item and its suboptions (if any) -->
+  <div *ngIf="activeItem" class="flex items-center gap-2">
+    <span class="font-bold">{{ activeItem.name }}:</span>
+    @for (sub of activeItem.suboption; track sub.name) {
+      <a
+        [routerLink]="sub.route"
+        (click)="selectSubItem(sub.name)"
+        [class.font-bold]="selectedItem === sub.name"
+        class="text-white hover:underline hover:text-gray-200 px-2">
+        {{ sub.name }}
+      </a>
+    }
+  </div>
+</div>

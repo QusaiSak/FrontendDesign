@@ -1,0 +1,65 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Envelope Schedule Report</h2>
+
+  <div class="bg-white shadow-sm rounded-lg p-4 mb-6">
+    <div class="flex flex-wrap items-center gap-4 mb-4">
+      <div class="flex items-center gap-2">
+        <label class="text-gray-700 font-medium">Search:</label>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="HC0421/C193/B02/S25"
+          class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+        />
+        <span class="text-red-600 font-bold text-sm">OR</span>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-4">
+        @for (config of dropdownConfigs; track config.key) {
+          <div class="flex items-center gap-2">
+            <label class="text-gray-700 font-medium">{{ config.label }}:</label>
+            <select
+              class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
+              (change)="onFilterChange(config.key, $event)">
+              <option>- Select -</option>
+              @for (option of dynamicUniqueOptions()[config.key]; track option) {
+                <option [value]="option">{{ option }}</option>
+              }
+            </select>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto bg-white shadow-sm rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-blue-600 text-white">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Vertical Name</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Hub Name</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Course Name</th>
+          <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Batch Name</th>
+          <th class="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">Semester</th>
+          <th class="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">Exam Type</th>
+          <th class="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">View</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        @for(item of (data() ?? []) | filterBydropdown: (currentFilters()) | filter: searchTerm(); track item.batchName) {
+          <tr class="hover:bg-gray-100">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.verticalName }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.hubName }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.courseName }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.batchName }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">{{ item.semester }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">{{ item.examType }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+              <a href="#" class="text-blue-600 hover:text-blue-900">{{ item.view }}</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

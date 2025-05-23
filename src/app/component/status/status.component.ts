@@ -1,17 +1,18 @@
-  import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FilterBydropdownPipe } from '../../../pipe/filter-bydropdown.pipe';
-import { FilterPipe } from '../../../pipe/filter.pipe';
-import { StudentData, TitleItem } from '../../env.interface';
+import { FilterPipe } from '../../pipe/filter.pipe';
+import { FilterBydropdownPipe } from '../../pipe/filter-bydropdown.pipe';
+import { StudentData, TitleItem } from '../env.interface';
+
 
 @Component({
-  selector: 'app-student',
+  selector: 'app-status',
   imports: [CommonModule, FormsModule, FilterPipe, FilterBydropdownPipe],
-  templateUrl: './student.component.html',
-  styleUrl: './student.component.css'
+  templateUrl: './status.component.html',
+  styleUrl: './status.component.css'
 })
-export class StudentComponent {
+export class StatusComponent {
   searchTerm = signal('');
   dataSt = signal<StudentData[]>([
     {
@@ -86,7 +87,8 @@ export class StudentComponent {
     { key: 'examCatType', label: 'Exam Category' },
     { key: 'examType', label: 'Exam Type' },
     { key: 'schedule', label: 'Schedule Date/Time' },
-    { key: 'download', label: 'Download' }
+    
+
   ];
 
   dropdownConfigs: any[] = [

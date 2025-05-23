@@ -5,17 +5,19 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true
 })
 export class FilterPipe implements PipeTransform {
-  transform<T>(items: T[], searchText: string): T[] {
-    if (!items || !searchText) {
+  transform(items: any[], searchText: string): any[] {
+    if (!items) {
+      return [];
+    }
+    if (!searchText) {
       return items;
     }
 
     searchText = searchText.toLowerCase();
+
+    // Filter items based on batchName only
     return items.filter(item =>
-      Object.values(item as object)
-        .some(value =>
-          value?.toString().toLowerCase().includes(searchText)
-        )
+      item.batchName && item.batchName.toString().toLowerCase().includes(searchText)
     );
   }
 }

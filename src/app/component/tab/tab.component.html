@@ -1,12 +1,14 @@
-<div class="flex items-center gap-4 bg-[#fbf9f8] border-b border-solid border-b-[#f3e9e8] px-10 py-3 p-2">
+<div class="flex items-center gap-4 px-10 py-3 ">
 
   <!-- Dropdown trigger -->
   <div class="relative">
     <button
       (click)="toggleDropdown()"
-      class="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-[#df6462] transition-colors text-xl">
-      <img src="/hamburger-menu-svgrepo-com.svg" alt="Menu" class="size-6">
-      Menu
+      class="flex items-center px-4 py-2 rounded-md shadow-light-50 shadow-md transition-colors text-xl hover:bg-[#7890b9]">
+      <div class="hover:invert flex items-center gap-2 ">
+        <img src="/hamburger-menu-svgrepo-com.svg" alt="Menu" class="size-6 ">
+        Menu
+      </div>
     </button>
 
     <!-- Dropdown options -->
@@ -14,30 +16,41 @@
       class="absolute left-0 mt-2 w-auto bg-white border border-gray-200 rounded-md shadow-lg z-50"
       *ngIf="isDropdownOpen">
       <div>
-        <nav class="flex items-center space-x-6">
+        <nav class="flex flex-col">
           @for (item of Data(); track item.name) {
             <div class="relative group">
-              <button
-                (click)="selectMainItem(item)"
-                [class.text-[#df6462]]="selectedMainItem === item.name"
-                class="flex items-center space-x-1 px-3 py-2 hover:text-[#df6462] font-medium"
-              >
-                <span>{{ item.name }}</span>
-                @if (item.suboption.length) {
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              @if (item.suboption.length) {
+                <button
+                  (click)="selectMainItem(item)"
+                  [class.text-gray-900]="selectedMainItem === item.name"
+                  class="flex items-center justify-between w-full space-x-1 px-6 py-2 hover:text-[#2D5A95] font-medium"
+                >
+                  <span>{{ item.name }}</span>
+                  <svg class="w-4 h-4 transform transition-transform"
+                       [class.rotate-180]="openAccordionItem === item.name"
+                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                   </svg>
-                }
-              </button>
+                </button>
+              }@else {
+                <a
+                  [routerLink]="item.routes"
+                  class="block text-md text-gray-900 font-montserrat px-6 py-2 hover:text-[#2D5A95]"
+                  (click)="selectSubItem(item.name)"
+                  [class.font-bold]="selectedItem === item.name"
+                >
+                  {{ item.name }}
+                </a>
+              }
 
-              @if (activeItem === item && item.suboption.length) {
-                <div class="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+              @if (openAccordionItem === item.name && item.suboption.length) {
+                <div class="flex flex-col pl-8 py-1 bg-gray-50">
                   @for (subItem of item.suboption; track subItem.name) {
                     <a
                       [routerLink]="subItem.route"
-                      class="block px-4 py-2 text-sm text-[#df6462]"
+                      class="block text-md text-gray-900 font-montserrat px-6 py-2 hover:text-[#2D5A95]"
                       (click)="selectSubItem(subItem.name)"
-                      [class.text-blue-600]="selectedItem === subItem.name"
+                      [class.font-bold]="selectedItem === subItem.name"
                     >
                       {{ subItem.name }}
                     </a>
@@ -50,17 +63,5 @@
       </div>
     </div>
   </div>
-
-  <!-- Active main item and its suboptions (if any) -->
-  <div *ngIf="activeItem" class="flex items-center gap-2">
-    @for (sub of activeItem.suboption; track sub.name) {
-      <a
-        [routerLink]="sub.route"
-        (click)="selectSubItem(sub.name)"
-        [class.font-bold]="selectedItem === sub.name"
-        class="text-[#df6462] hover:underline hover:text-[#c36b6a] px-2 font-bold text-xl">
-        {{ sub.name }}
-      </a>
-    }
-  </div>
 </div>
+

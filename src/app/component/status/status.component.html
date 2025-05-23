@@ -1,11 +1,11 @@
-<div class="p-6 min-h-screen">
+<div class="p-6 bg-gray-50 min-h-screen">
 
 
-  <div class="px-6 py-4">
-    <h2 class="text-5xl font-bold text-gray-900 font-montserrat mb-6">Envelope Schedule Report</h2>
+  <div class="px-4 py-3">
+    <h2 class="text-3xl font-bold text-gray-900 font-montserrat mb-6 text-center">Student Schedule Report</h2>
     <label class="flex flex-col min-w-40 h-12 w-full">
 
-      <div class="flex w-full flex-1 items-stretch rounded-xl h-full border-[1px]">
+      <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
         <div
           class="text-gray-900 flex border-none items-center justify-center pl-4 rounded-l-xl border-r-0"
           data-icon="MagnifyingGlass"
@@ -22,20 +22,21 @@
           type="text"
           [(ngModel)]="searchTerm"
           placeholder="Search by course name, ID..."
-          class="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-gray-900 font-montserrat focus:outline-0 focus:ring-0 border-none focus:border-none h-full placeholder:text-gray-600 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+          class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-gray-900 font-montserrat focus:outline-0 focus:ring-0 border-none focus:border-none h-full placeholder:text-gray-600 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
           />
       </div>
     </label>
   </div>
 
 
-    <div class="flex gap-3 px-6 py-4 flex-wrap pr-4">
+    <div class="flex gap-3 p-3 flex-wrap pr-4">
         @for (config of dropdownConfigs; track config.key) {
           <div class="flex items-center gap-2">
+            <label class="text-gray-900 font-montserrat font-medium">{{ config.label }}:</label>
             <select
               class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-xl pl-4 text-gray-900 font-montserrat text-sm font-medium leading-normal "
               (change)="onFilterChange(config.key, $event)">
-              <option value="- Select -">{{config.label}}</option>
+              <option>- Select -</option>
               @for (option of dynamicUniqueOptions()[config.key]; track option) {
                 <option [value]="option">{{ option }}</option>
               }
@@ -45,32 +46,37 @@
     </div>
 
 
-  <div class="px-4 py-3\">
+  <div class="px-4 py-3 container">
     <div class="flex overflow-hidden rounded-xl border border-[#e6d3d1] bg-[#fbf9f8]">
     <table class="w-full">
       <thead>
         <tr class="bg-[#fbf9f8]">
           @for (header of title; track header.key) {
-            <th class="text-align px-4 py-3 text-left w-96 text-md font-medium leading-normal bg-[#759fd7] text-white"
-                [class.w-60]="header.key === 'view'"
-                [class.text-gray-900]="header.key === 'view'"
-                [class.text-gray-900]="header.key !== 'view'">
+            <th class="text-align px-4 py-3 text-left w-[400px] text-md font-medium leading-normal"
+                [class.w-60]="header.key === 'download'"
+                [class.text-gray-900]="header.key === 'download'"
+                [class.text-gray-900]="header.key !== 'download'">
               {{ header.label }}
             </th>
           }
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        @for(item of data() | filterBydropdown: (currentFilters()) | filter: searchTerm(); track item.batchName) {
+        @for(item of dataSt() | filterBydropdown: (currentFilters()) | filter: searchTerm(); track item.batchName) {
           <tr class="hover:bg-gray-50">
             <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal ">{{ item.verticalName }}</td>
             <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.hubName }}</td>
             <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.courseName }}</td>
+            <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.catName }}</td>
             <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.batchName }}</td>
             <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.semester }}</td>
             <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.examType }}</td>
+            <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">{{ item.examCatType }}</td>
+            <td class="h-[72px] px-4 py-2 w-[400px] text-gray-900 font-montserrat text-sm font-normal leading-normal">
+              {{ item.schedule | date:'medium' }}
+            </td>
             <td class="h-[72px] px-4 py-2 w-60 text-gray-900 font-montserrat text-sm font-bold leading-normal tracking-[0.015em]">
-              <a href="#">{{ item.view }}</a>
+              <a href="#">{{item.download }}</a>
             </td>
           </tr>
         }

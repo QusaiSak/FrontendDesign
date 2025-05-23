@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { TabComponent } from "../tab/tab.component";
 
 @Component({
@@ -15,16 +14,11 @@ export class HeaderComponent {
     {
       name: "Barcode",
       suboption: [
-        { name: "enevelop", route: "/envelope" },
-        { name: "batch", route: "/batch" }
+        { name: "Envelope", route: "/envelope" },
+        { name: "Batch", route: "/batch" },
+        { name: "Student", route: "/student" },
       ]
     },
-    {
-      name: "Reports",
-      suboption: [
-        { name: "Envelope", route: "/envelope" },
-        { name: "Batch", route: "/batch" }
-      ]
-    }
+
   ];
 }

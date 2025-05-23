@@ -1,39 +1,64 @@
-<div class="flex items-center gap-4 bg-[#e43e3e] text-white p-2">
+<div class="flex items-center gap-4 bg-[#fbf9f8] border-b border-solid border-b-[#f3e9e8] px-10 py-3 p-2">
 
   <!-- Dropdown trigger -->
   <div class="relative">
     <button
       (click)="toggleDropdown()"
-      class="flex items-center gap-2 px-4 py-2 text-white rounded-md hover:bg-[#df6462] transition-colors">
-      <img src="/hamburger-menu-svgrepo-com.svg" alt="Menu" class="h-5 w-5">
+      class="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-[#df6462] transition-colors text-xl">
+      <img src="/hamburger-menu-svgrepo-com.svg" alt="Menu" class="size-6">
       Menu
     </button>
 
     <!-- Dropdown options -->
     <div
-      class="absolute left-0 mt-2 w-96 bg-white border border-gray-200 rounded-md shadow-lg z-50"
+      class="absolute left-0 mt-2 w-auto bg-white border border-gray-200 rounded-md shadow-lg z-50"
       *ngIf="isDropdownOpen">
       <div>
-        @for (item of Data(); track item.name) {
-          <div
-            (click)="selectMainItem(item)"
-            class="p-3 cursor-pointer hover:bg-[#E7EEF8] text-black transition-colors">
-            {{ item.name }}
-          </div>
-        }
+        <nav class="flex items-center space-x-6">
+          @for (item of Data(); track item.name) {
+            <div class="relative group">
+              <button
+                (click)="selectMainItem(item)"
+                [class.text-[#df6462]]="selectedMainItem === item.name"
+                class="flex items-center space-x-1 px-3 py-2 hover:text-[#df6462] font-medium"
+              >
+                <span>{{ item.name }}</span>
+                @if (item.suboption.length) {
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                }
+              </button>
+
+              @if (activeItem === item && item.suboption.length) {
+                <div class="absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                  @for (subItem of item.suboption; track subItem.name) {
+                    <a
+                      [routerLink]="subItem.route"
+                      class="block px-4 py-2 text-sm text-[#df6462]"
+                      (click)="selectSubItem(subItem.name)"
+                      [class.text-blue-600]="selectedItem === subItem.name"
+                    >
+                      {{ subItem.name }}
+                    </a>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </nav>
       </div>
     </div>
   </div>
 
   <!-- Active main item and its suboptions (if any) -->
   <div *ngIf="activeItem" class="flex items-center gap-2">
-    <span class="font-bold">{{ activeItem.name }}:</span>
     @for (sub of activeItem.suboption; track sub.name) {
       <a
         [routerLink]="sub.route"
         (click)="selectSubItem(sub.name)"
         [class.font-bold]="selectedItem === sub.name"
-        class="text-white hover:underline hover:text-gray-200 px-2">
+        class="text-[#df6462] hover:underline hover:text-[#c36b6a] px-2 font-bold text-xl">
         {{ sub.name }}
       </a>
     }

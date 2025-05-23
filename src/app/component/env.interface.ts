@@ -7,3 +7,29 @@ export interface EnvelopeData {
   examType: string | null;
   view: string | null;
 }
+export interface BatchData {
+  verticalName: string | null;
+  hubName: string | null;
+  courseName: string | null;
+  batchName: string | null;
+  semester: string | null;
+  examType: string | null;
+  download: string | null;
+}
+export interface StudentData {
+  verticalName: string | null;
+  hubName: string | null;
+  courseName: string | null;
+  catName: string | null;
+  batchName: string | null;
+  semester: string | null;
+  examCatType: string | null;
+  examType: string | null;
+  schedule: Date | null;
+  download: string | null;
+}
+
+export interface TitleItem {
+  key: string | null;
+  label: string | null;
+}

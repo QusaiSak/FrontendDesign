@@ -3,6 +3,7 @@ import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FilterBydropdownPipe } from '../../../pipe/filter-bydropdown.pipe';
 import { FilterPipe } from '../../../pipe/filter.pipe';
+import { EnvelopeData, TitleItem } from '../../env.interface';
  // Import the new pipe
 
 
@@ -15,7 +16,16 @@ import { FilterPipe } from '../../../pipe/filter.pipe';
 })
 export class EnvelopeComponent {
   searchTerm = signal('');
-  data = signal<any[]>([
+  title :TitleItem[] = [
+    { key: 'verticalName', label: 'Vertical Name' },
+    { key: 'hubName', label: 'Hub Name' },
+    { key: 'courseName', label: 'Course Name' },
+    { key: 'batchName', label: 'Batch Name' },
+    { key: 'semester', label: 'Semester' },
+    { key: 'examType', label: 'Exam Type' },
+    { key: 'view', label: 'View' }
+  ];
+  data = signal<EnvelopeData[]>([
     {
       verticalName: 'Healthcare - HC',
       hubName: 'Iqraa Academy of Iqraa International Hospital and Research Centre - HC0421',

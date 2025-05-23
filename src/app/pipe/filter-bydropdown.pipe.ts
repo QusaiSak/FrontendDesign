@@ -1,31 +1,30 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { EnvelopeData } from '../component/env.interface'; // Import the interface
+
+// Define a base interface for common properties
 
 @Pipe({
   name: 'filterBydropdown',
   standalone: true
 })
 export class FilterBydropdownPipe implements PipeTransform {
-
-  transform(data: EnvelopeData[], filters: { [key: string]: string | null }): EnvelopeData[] {
+  transform(data: any[], filters: { [key: string]: string | null }): any[] {
     if (!data || !filters) {
       return data;
     }
 
     // Get the keys from the filters object that have non-null values
-    const activeFilters = Object.keys(filters).filter(key => filters[key] !== null);
+    const activeFilters = Object.entries(filters)
+      .filter(([_, value]) => value !== null && value !== '- Select -')
+      .map(([key]) => key);
 
     if (activeFilters.length === 0) {
       return data; // No active filters, return original data
     }
 
-    return data.filter((item: EnvelopeData) => { // Add type annotation for item
-      // Check if the item matches all active filters
-      return activeFilters.every(key => {
-        // Ensure the item has the property and its value matches the filter value
-        // Using 'as any' to explicitly allow dynamic property access
-        return (item as any).hasOwnProperty(key) && (item as any)[key] === filters[key];
-      });
-    });
+    return data.filter(item =>
+      activeFilters.every(key =>
+        item[key] === filters[key]
+      )
+    );
   }
 }

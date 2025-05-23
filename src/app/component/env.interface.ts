@@ -28,6 +28,24 @@ export interface StudentData {
   schedule: Date | null;
   download: string | null;
 }
+export interface StatusData {
+  verticalName: string | null;
+  hubName: string | null;
+  courseName: string | null;
+  catName: string | null;
+  batchName: string | null;
+  semester: string | null;
+  examCatType: string | null;
+  examType: string | null;
+  schedule: Date | null;
+  questionPaperStatus?: 'Uploaded' | 'Pending';
+  envelopeReceived?: 'Yes' | 'No';
+  zipUploadCount?: number;
+  examinerId?: string | null;
+  examinerName?: string | null;
+  paperCheckingStatus?: string | null;
+}
+
 
 export interface TitleItem {
   key: string | null;

@@ -20,9 +20,9 @@ export class AppComponent implements OnInit {
       name: "Barcode",
       routes: "/envelope",
       suboption: [
-        { name: "Envelope", route: "/envelope" },
-        { name: "Batch", route: "/batch" },
-        { name: "Student", route: "/student" },
+        { name: "Envelop Schedule Report", route: "/envelope" },
+        { name: "Batch barcode Excel", route: "/batch" },
+        { name: "Student barcode Excel", route: "/student" },
       ]
     },
     {

@@ -85,7 +85,7 @@ export class StudentComponent {
     { key: 'semester', label: 'Semester' },
     { key: 'examCatType', label: 'Exam Category' },
     { key: 'examType', label: 'Exam Type' },
-    { key: 'schedule', label: 'Schedule Date/Time' },
+    { key: 'schedule', label: 'Date/Time' },
     { key: 'download', label: 'Download' }
   ];
 

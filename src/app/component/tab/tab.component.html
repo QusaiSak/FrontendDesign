@@ -1,10 +1,10 @@
-<div class="flex items-center gap-4 px-10 py-3 ">
+<div class="flex items-center gap-4 px-10">
 
   <!-- Dropdown trigger -->
   <div class="relative">
     <button
       (click)="toggleDropdown()"
-      class="flex items-center px-4 py-2 rounded-md shadow-light-50 shadow-md transition-colors text-xl hover:bg-[#7890b9]">
+      class="flex items-center px-4 py-2 rounded-md shadow-light-50 shadow-md transition-colors text-xl hover:bg-[#9cb6e4]">
       <div class="hover:invert flex items-center gap-2 ">
         <img src="/hamburger-menu-svgrepo-com.svg" alt="Menu" class="size-6 ">
         Menu
@@ -18,6 +18,7 @@
       <div>
         <nav class="flex flex-col">
           @for (item of Data(); track item.name) {
+            <!-- Container for main item and its sub-options -->
             <div class="relative group">
               @if (item.suboption.length) {
                 <button
@@ -32,6 +33,25 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                   </svg>
                 </button>
+
+                <!-- Sub-options positioned to the side -->
+                @if (openAccordionItem === item.name) {
+                  <div class="absolute left-full top-0 mt-[-1px] w-full min-w-[200px] bg-gray-50 border border-gray-200 rounded-md shadow-lg z-50">
+                    <div class="flex flex-col py-1">
+                      @for (subItem of item.suboption; track subItem.name) {
+                        <a
+                          [routerLink]="subItem.route"
+                          class="block text-md text-gray-900 font-montserrat px-6 py-2 hover:text-[#2D5A95]"
+                          (click)="selectSubItem(subItem.name)"
+                          [class.font-bold]="selectedItem === subItem.name"
+                        >
+                          {{ subItem.name }}
+                        </a>
+                      }
+                    </div>
+                  </div>
+                }
+
               }@else {
                 <a
                   [routerLink]="item.routes"
@@ -41,21 +61,6 @@
                 >
                   {{ item.name }}
                 </a>
-              }
-
-              @if (openAccordionItem === item.name && item.suboption.length) {
-                <div class="flex flex-col pl-8 py-1 bg-gray-50">
-                  @for (subItem of item.suboption; track subItem.name) {
-                    <a
-                      [routerLink]="subItem.route"
-                      class="block text-md text-gray-900 font-montserrat px-6 py-2 hover:text-[#2D5A95]"
-                      (click)="selectSubItem(subItem.name)"
-                      [class.font-bold]="selectedItem === subItem.name"
-                    >
-                      {{ subItem.name }}
-                    </a>
-                  }
-                </div>
               }
             </div>
           }

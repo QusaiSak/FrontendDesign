@@ -131,9 +131,7 @@ export class StatusComponent {
     { label: 'Subject', key: 'catName' },
     { label: 'Exam Type', key: 'examType' },
     { label: 'Exam Category', key: 'examCatType' },
-    { label: 'Question Paper Status', key: 'questionPaperStatus' },
     { label: 'Envelope Received', key: 'envelopeReceived' },
-    { label: 'Examiner Name', key: 'examinerName' },
     { label: 'Examiner ID', key: 'examinerId' }
   ];
 

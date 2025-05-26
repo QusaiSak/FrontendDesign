@@ -1,17 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FilterBydropdownPipe } from '../../../pipe/filter-bydropdown.pipe';
-import { FilterPipe } from '../../../pipe/filter.pipe';
 import { BatchData, TitleItem } from '../../env.interface';
+import { FiltersearchComponent } from "../../filtersearch/filtersearch.component";
 
 @Component({
   selector: 'app-batch',
-  imports: [CommonModule, FormsModule, FilterPipe, FilterBydropdownPipe],
+  standalone: true,
+  imports: [CommonModule, FormsModule, FiltersearchComponent],
   templateUrl: './batch.component.html',
-  styleUrl: './batch.component.css',
+  styleUrl: './batch.component.css'
 })
 export class BatchComponent {
+  filteredData = signal<BatchData[]>([]);
   searchTerm = signal('');
   title :TitleItem[] = [
     { key: 'verticalName', label: 'Vertical Name' },
@@ -102,5 +103,9 @@ export class BatchComponent {
       ...filters,
       [key]: value === '- Select -' ? null : value
     }));
+  }
+
+  onFilteredDataChange(data: BatchData[]) {
+    this.filteredData.set(data);
   }
 }

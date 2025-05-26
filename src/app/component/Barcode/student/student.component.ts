@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { StudentData, TitleItem } from '../../env.interface';
 import { FiltersearchComponent } from '../../filtersearch/filtersearch.component';
+import { TableComponent } from "../../table/table.component";
 
 @Component({
   selector: 'app-student',
   standalone: true,
-  imports: [CommonModule, FiltersearchComponent],
+  imports: [CommonModule, FiltersearchComponent, TableComponent],
   templateUrl: './student.component.html',
   styleUrl: './student.component.css'
 })

@@ -48,6 +48,6 @@ export interface StatusData {
 
 
 export interface TitleItem {
-  key: string | null;
-  label: string | null;
+  key: string ;
+  label: string;
 }

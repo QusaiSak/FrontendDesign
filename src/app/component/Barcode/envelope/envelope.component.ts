@@ -3,11 +3,12 @@ import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EnvelopeData, TitleItem } from '../../env.interface';
 import { FiltersearchComponent } from "../../filtersearch/filtersearch.component";
+import { TableComponent } from "../../table/table.component";
 
 @Component({
   selector: 'app-envelope',
   standalone: true,
-  imports: [CommonModule, FormsModule, FiltersearchComponent],
+  imports: [CommonModule, FormsModule, FiltersearchComponent, TableComponent],
   templateUrl: './envelope.component.html',
   styleUrl: './envelope.component.css'
 })

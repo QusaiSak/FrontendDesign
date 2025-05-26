@@ -1,0 +1,38 @@
+<div class="px-6 py-4">
+  <div class="flex overflow-hidden rounded-xl border border-[#e6d3d1] bg-[#fbf9f8]">
+    <div class="w-full"
+         [class.max-h-120]="data.length > 4"
+         [class.overflow-y-auto]="data.length > 4">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead class="sticky top-0 z-10">
+            <tr class="bg-[#fbf9f8]">
+              @for (header of title; track header.key) {
+                <th class="text-align px-4 py-3 text-left h-16 text-md font-medium leading-normal bg-[#759fd7] text-white min-w-[200px]">
+                  {{ header.label }}
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for(item of data; track item) {
+              <tr class="hover:bg-gray-50">
+                @for (header of title; track header.key) {
+                  <td [ngClass]="cellPadding + ' ' + cellMargin + ' text-gray-900 font-montserrat text-sm font-normal leading-normal min-w-[200px] border-r border-gray-300'">
+                    @if (isLinkColumn(header.key)) {
+                      <a [href]="item[header.key]" class="text-blue-600 hover:underline">
+                        {{ header.key === 'download' ? 'Download' : 'View' }}
+                      </a>
+                    } @else {
+                      {{ item[header.key] }}
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -3,11 +3,12 @@ import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { StatusData, TitleItem } from '../env.interface';
 import { FiltersearchComponent } from '../filtersearch/filtersearch.component';
+import { TableComponent } from '../table/table.component';
 
 @Component({
   selector: 'app-status',
   standalone: true,
-  imports: [CommonModule, FormsModule, FiltersearchComponent],
+  imports: [CommonModule, FormsModule, FiltersearchComponent, TableComponent],
   templateUrl: './status.component.html',
   styleUrl: './status.component.css'
 })

@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { FilterBydropdownPipe } from '../../pipe/filter-bydropdown.pipe';
 import { FilterPipe } from '../../pipe/filter.pipe';
 
@@ -16,9 +18,10 @@ interface DropdownConfig {
 @Component({
   selector: 'app-filtersearch',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,NgIcon],
   templateUrl: './filtersearch.component.html',
-  styleUrl: './filtersearch.component.css'
+  styleUrl: './filtersearch.component.css',
+  viewProviders:[provideIcons({ heroMagnifyingGlass })]
 })
 export class FiltersearchComponent {
   @Input() dropdownConfigs: DropdownConfig[] = [];

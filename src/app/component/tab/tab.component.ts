@@ -1,13 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroBars3 , heroArrowLeft} from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-tab',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink ,NgIcon],
   templateUrl: './tab.component.html',
-  styleUrl: './tab.component.css'
+  styleUrl: './tab.component.css',
+  viewProviders: [provideIcons({ heroBars3 , heroArrowLeft })]
 })
 export class TabComponent {
   Data = input<Array<{ name: string;routes:string ; suboption: Array<{ name: string; route: string }> }>>([]);

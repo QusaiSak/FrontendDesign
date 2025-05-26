@@ -4,8 +4,8 @@
   <div class="relative">
     <button
       (click)="toggleDropdown()"
-      class="h-8 md:h-10 px-2 py-2 md:px-3 md:py-3  flex gap-1 md:gap-2 items-center font-bold text-sm md:text-lg rounded-md hover:bg-[#2D5A95]/45">
-        <img src="/hamburger-menu-svgrepo-com.svg" alt="Menu" class="size-6 ">
+      class="h-8 md:h-10 px-2 py-2 md:px-3 md:py-3  flex gap-1 md:gap-2 items-center text-sm md:text-lg rounded-md bg-[#2D5A95] hover:bg-[#2D5A95]/50 text-white hover:text-[#2D5A95] shadow-md cursor-pointer">
+      <ng-icon name="heroBars3" />
         Menu
     </button>
 
@@ -25,11 +25,8 @@
                   class="flex items-center justify-between w-full space-x-1 px-6 py-2 hover:text-[#2D5A95] font-medium"
                 >
                   <span>{{ item.name }}</span>
-                  <svg class="w-4 h-4 transform transition-transform"
-                       [class.rotate-180]="openAccordionItem === item.name"
-                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                  <ng-icon name="heroArrowLeft"  class="w-4 h-4 transform transition-transform"
+                  [class.rotate-180]="openAccordionItem === item.name"/>
                 </button>
 
                 <!-- Sub-options positioned to the side -->

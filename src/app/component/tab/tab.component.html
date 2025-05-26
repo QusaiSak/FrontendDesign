@@ -4,11 +4,9 @@
   <div class="relative">
     <button
       (click)="toggleDropdown()"
-      class="flex items-center px-4 py-2 rounded-md shadow-light-50 shadow-md transition-colors text-xl hover:bg-[#9cb6e4]">
-      <div class="hover:invert flex items-center gap-2 ">
+      class="h-8 md:h-10 px-2 py-2 md:px-3 md:py-3  flex gap-1 md:gap-2 items-center font-bold text-sm md:text-lg rounded-md hover:bg-[#2D5A95]/45">
         <img src="/hamburger-menu-svgrepo-com.svg" alt="Menu" class="size-6 ">
         Menu
-      </div>
     </button>
 
     <!-- Dropdown options -->
@@ -41,7 +39,7 @@
                       @for (subItem of item.suboption; track subItem.name) {
                         <a
                           [routerLink]="subItem.route"
-                          class="block text-md text-gray-900 font-montserrat px-6 py-2 hover:text-[#2D5A95]"
+                          class="block text-md text-gray-900 font-noto-sans px-6 py-2 hover:text-[#2D5A95]"
                           (click)="selectSubItem(subItem.name)"
                           [class.font-bold]="selectedItem === subItem.name"
                         >

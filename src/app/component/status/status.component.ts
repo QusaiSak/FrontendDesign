@@ -128,7 +128,7 @@ export class StatusComponent {
     { label: 'Course', key: 'courseName' },
     { label: 'Batch', key: 'batchName' },
     { label: 'Semester', key: 'semester' },
-    { label: 'Category', key: 'catName' },
+    { label: 'Subject', key: 'catName' },
     { label: 'Exam Type', key: 'examType' },
     { label: 'Exam Category', key: 'examCatType' },
     { label: 'Question Paper Status', key: 'questionPaperStatus' },

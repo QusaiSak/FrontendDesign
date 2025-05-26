@@ -1,5 +1,5 @@
 <div class="px-6 py-4">
-  <label class="flex flex-col min-w-40 h-12 w-full">
+  <label class="flex flex-col min-w-40 h-10 w-full">
     <div class="flex w-full flex-1 items-stretch rounded-xl h-full border-[1px]">
       <div class="text-gray-900 flex border-none items-center justify-center pl-4 rounded-l-xl border-r-0 text-xl">
         <ng-icon name="heroMagnifyingGlass"/>
@@ -19,9 +19,9 @@
   @for (config of dropdownConfigs; track config.key) {
     <div class="flex items-center gap-2">
       <select
-        class="flex h-10 w-32  shrink-0 items-center justify-center rounded-xl text-gray-900 text-sm font-medium leading-normal truncate hover:text-clip hover:overflow-visible border-[1px]"
+        class="flex h-10 w-28  shrink-0 items-center justify-center rounded-xl text-gray-900 text-sm font-medium leading-normal truncate hover:text-clip hover:overflow-visible border-[1px]"
         (change)="onFilterChange(config.key, $event)">
-        <option value="- Select -" class="text-center">{{config.label}}</option>
+        <option value="- Select -">{{config.label}}</option>
         @for (option of dynamicUniqueOptions()[config.key]; track option) {
           <option [value]="option" class="truncate hover:text-clip">{{ option }}</option>
         }

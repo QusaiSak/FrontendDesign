@@ -145,7 +145,7 @@ To integrate this frontend application with a backend API, follow these steps:
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/QusaiSak/concepts.git
+    git clone https://github.com/QusaiSak/FrontendDesign.git
     cd concepts
     ```
 2.  **Install dependencies**:

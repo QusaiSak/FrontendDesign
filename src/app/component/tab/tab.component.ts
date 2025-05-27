@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroBars3 , heroArrowLeft} from '@ng-icons/heroicons/outline';
+import { heroArrowLeft, heroBars3 } from '@ng-icons/heroicons/outline';
 
 @Component({
   selector: 'app-tab',

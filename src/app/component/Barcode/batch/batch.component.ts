@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BatchData, TitleItem } from '../../env.interface';
 import { FiltersearchComponent } from "../../filtersearch/filtersearch.component";
 import { TableComponent } from "../../table/table.component";
+import { BatchData, TitleItem } from '../../env.interface';
 
 @Component({
   selector: 'app-batch',

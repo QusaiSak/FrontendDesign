@@ -51,3 +51,14 @@ export interface TitleItem {
   key: string ;
   label: string;
 }
+
+
+
+export interface User {
+  id:number;
+  username: string;
+  email: string;
+  password: string;
+  repassword: string;
+  token: string;
+}

@@ -1,0 +1,78 @@
+<div class="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+
+
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white py-8 px-6 shadow-xl rounded-xl sm:px-10 border border-gray-100">
+      <div class="flex justify-center mb-6">
+        <img src="/logo.png" alt="" class="h-20 w-auto">
+      </div>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div>
+          <label for="email" class="block text-sm font-bold text-gray-700">
+            Username
+          </label>
+          <div class="mt-1">
+            <input
+              id="email"
+              formControlName="email"
+              type="email"
+              required
+              class="appearance-none block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2D5A95] focus:border-[#2D5A95] sm:text-sm"
+              placeholder="Enter your Username"
+            >
+          </div>
+          <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="mt-1 text-sm text-red-600">
+            <div *ngIf="email?.errors?.['required']">Username is required</div>
+            <div *ngIf="email?.errors?.['email']">Please enter a valid username</div>
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-bold text-gray-700">
+            Password
+          </label>
+          <div class="relative">
+            <input
+              id="password"
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+              required
+              class="appearance-none block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2D5A95] focus:border-[#2D5A95] sm:text-sm"
+              placeholder="Enter your Password"
+            >
+            <button
+              type="button"
+              (click)="togglePasswordVisibility()"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              <ng-icon
+                [name]="showPassword ? 'heroEye' : 'heroEyeSlash'"
+                class="h-5 w-5 text-gray-400 hover:text-gray-500"
+                aria-hidden="true"
+              />
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            [disabled]="loginForm.invalid"
+            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#2D5A95]/85 hover:bg-[#2D5A95] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2D5A95] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Login
+          </button>
+        </div>
+
+        <div class="text-center text-xs text-gray-500">
+          For queries or assistance, contact info <br>
+          <a href="mailto:support@office.in" class="text-blue-600 hover:text-blue-700">support&#64;office.in</a>
+        </div>
+
+        <div class="text-center text-xs text-gray-500 flex justify-center items-center">
+          Powered by <img src="/offee.png" alt="offee" class="h-5 w-auto">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -8,22 +8,22 @@
       </div>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <div>
-          <label for="email" class="block text-sm font-bold text-gray-700">
+          <label for="username" class="block text-sm font-bold text-gray-700">
             Username
           </label>
           <div class="mt-1">
             <input
-              id="email"
-              formControlName="email"
-              type="email"
+              id="username"
+              formControlName="username"
+              type="text"
               required
               class="appearance-none block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2D5A95] focus:border-[#2D5A95] sm:text-sm"
               placeholder="Enter your Username"
             >
           </div>
-          <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="mt-1 text-sm text-red-600">
-            <div *ngIf="email?.errors?.['required']">Username is required</div>
-            <div *ngIf="email?.errors?.['email']">Please enter a valid username</div>
+          <div *ngIf="username?.invalid && (username?.dirty || username?.touched)" class="mt-1 text-sm text-red-600">
+            <div *ngIf="username?.errors?.['required']">Username is required</div>
+            <div *ngIf="username?.errors?.['username']">Please enter a valid username</div>
           </div>
         </div>
 
@@ -62,6 +62,11 @@
           >
             Login
           </button>
+        </div>
+
+        <!-- Add error message display -->
+        <div *ngIf="errorMessage" class="text-center text-sm text-red-600">
+          {{ errorMessage }}
         </div>
 
         <div class="text-center text-xs text-gray-500">

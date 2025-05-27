@@ -10,7 +10,7 @@ import { User } from '../env.interface';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule,NgIcon,RouterLink],
+  imports: [CommonModule,NgIcon],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
   viewProviders: [provideIcons({ heroArrowRightOnRectangle })]

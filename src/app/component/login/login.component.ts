@@ -22,13 +22,13 @@ export class LoginComponent {
   errorMessage: string = '';
 
   loginForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
+    username: new FormControl('', [Validators.required]),
     password: new FormControl('', [
       Validators.required,
-      Validators.minLength(8)
+      Validators.minLength(6)
     ])
   });
-  get email() { return this.loginForm.get('email'); }
+  get username() { return this.loginForm.get('username'); }
   get password() { return this.loginForm.get('password'); }
 
   onSubmit():void {

@@ -16,7 +16,6 @@ It emphasizes **modularity**, **responsiveness**, and **clarity** in frontend de
 
 ## 📁 Project Structure Overview
 
-```text
 .angular/
 .editorconfig
 .gitignore

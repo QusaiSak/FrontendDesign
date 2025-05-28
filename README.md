@@ -1,6 +1,3 @@
-Sure! Here's your enhanced and beautified `README.md` file in complete Markdown format with proper formatting, spacing, syntax highlighting, and emojis to improve readability and presentation:
-
-````markdown
 # 🌟 Angular Concepts Application
 
 This project is an Angular application designed to demonstrate modern Angular concepts, including:
@@ -16,6 +13,7 @@ It emphasizes **modularity**, **responsiveness**, and **clarity** in frontend de
 
 ## 📁 Project Structure Overview
 
+```text
 .angular/
 .editorconfig
 .gitignore

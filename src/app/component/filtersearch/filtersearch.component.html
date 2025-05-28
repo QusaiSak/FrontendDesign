@@ -17,15 +17,28 @@
 
 <div class="flex gap-3 px-6 py-4 flex-wrap pr-4">
   @for (config of dropdownConfigs; track config.key) {
-    <div class="flex items-center gap-2">
-      <select
-        class="flex h-10 w-28  shrink-0 items-center justify-center rounded-xl text-gray-900 text-sm font-medium leading-normal truncate hover:text-clip hover:overflow-visible border-[1px]"
-        (change)="onFilterChange(config.key, $event)">
-        <option value="- Select -">{{config.label}}</option>
+    <div class="flex items-center">
+      <div class="relative">
+        <select
+        class="peer h-9 w-28 pt-3 px-2 border-[1px] rounded-xl text-sm font-medium text-gray-900 appearance-none focus:outline-none focus:ring-0"
+        (change)="onFilterChange(config.key, $event)"
+        required
+      >
+        <option value="" selected ></option>
         @for (option of dynamicUniqueOptions()[config.key]; track option) {
-          <option [value]="option" class="truncate hover:text-clip">{{ option }}</option>
+          <option [value]="option" class="text-left px-2 truncate">{{ option }}</option>
         }
       </select>
+      <label
+        class="absolute truncate left-2 top-2 text-sm transition-all duration-300
+               peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:text-blue-600
+               peer-valid:-translate-y-4 peer-valid:scale-75 peer-valid:text-blue-600
+               bg-white px-1 pointer-events-none">
+        {{ config.label.length > 10 ? (config.label | slice:0:10) + '...' : config.label }}
+      </label>
+      </div>
     </div>
   }
 </div>
+
+

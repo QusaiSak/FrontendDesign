@@ -1,0 +1,8 @@
+.select-custom {
+  text-align-last: center;
+}
+
+.select-custom option {
+  text-align: left;
+  direction: ltr;
+}

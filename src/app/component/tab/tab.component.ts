@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowLeft, heroBars3 } from '@ng-icons/heroicons/outline';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-tab',
@@ -18,8 +19,7 @@ export class TabComponent {
   selectedItem: string = '';
   selectedMainItem: string | null = null;
 
-  // Only one active item at a time (This seems to be for the external display, which we will remove)
-  // activeItem: { name: string; routes:string ; suboption: Array<{ name: string; route: string }> } | null = null;
+  auth = inject(AuthService)
 
   isDropdownOpen = false;
   openAccordionItem: string | null = null; // Add this property to track open accordion item

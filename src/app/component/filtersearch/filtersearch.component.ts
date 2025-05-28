@@ -34,7 +34,7 @@ export class FiltersearchComponent {
 
   // Computed signal for unique options
   dynamicUniqueOptions = computed(() => {
-    const uniqueOptions: { [key: string]: (string | number)[] } = {};
+    const uniqueOptions: { [key: string]: (string )[] } = {};
     const currentData = this.data;
     const currentFilters = this.selectedFilters();
 
@@ -83,7 +83,7 @@ export class FiltersearchComponent {
     const value = selectElement.value;
     this.selectedFilters.update(filters => ({
       ...filters,
-      [key]: value === '- Select -' ? null : value
+      [key]: value === '' ? null : value
     }));
     // Emit the filtered data after filter change
     const filtered = this.data

@@ -1,83 +1,98 @@
-<div class="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+<div class="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
 
+  <!-- Circle background (only on md and above) -->
+  <div class="absolute inset-0 flex justify-center items-start z-0">
+    <div class="hidden xl:block bg-gradient-to-br from-white via-[#2D5A95]/50 to-[#2D5A95]/70 rounded-full w-[1100px] h-[1100px] opacity-70"
+         style="transform: translate(-40%, -40%);">
+    </div>
+  </div>
 
-  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="bg-white py-8 px-6 shadow-xl rounded-xl sm:px-10 border border-gray-100">
-      <div class="flex justify-center mb-6">
-        <img src="/logo.png" alt="" class="h-20 w-auto">
-      </div>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
-        <div>
-          <label for="username" class="block text-sm font-bold text-gray-700">
-            Username
-          </label>
-          <div class="mt-1">
-            <input
-              id="username"
-              formControlName="username"
-              type="text"
-              required
-              class="appearance-none block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2D5A95] focus:border-[#2D5A95] sm:text-sm"
-              placeholder="Enter your Username"
-            >
-          </div>
-          <div *ngIf="username?.invalid && (username?.dirty || username?.touched)" class="mt-1 text-sm text-red-600">
-            <div *ngIf="username?.errors?.['required']">Username is required</div>
-            <div *ngIf="username?.errors?.['username']">Please enter a valid username</div>
-          </div>
+  <!-- Main content layout -->
+  <div class="relative z-10 flex flex-col md:flex-row items-center justify-center w-full px-4">
+
+    <!-- Left side image & text (only visible on large screens) -->
+    <div class="hidden xl:flex flex-col items-start text-gray-800 lg:ml-32 xl:ml-40">
+      <img src="/loginpage.png" alt="" class="w-auto mb-4">
+      <h1 class="text-4xl font-extrabold text-[#2D5A95] leading-snug md:mr-20 newfont w-full">
+        "A Deemed to be University and Grant-in Aid <br> Institute under Ministry of Education, GoI"
+      </h1>
+    </div>
+
+    <!-- Right side: login form -->
+    <div class="w-full sm:max-w-md md:max-w-sm lg:max-w-md mt-10 md:mt-0">
+      <div class="bg-white py-8 px-6 shadow-xl rounded-xl border border-gray-100 sm:px-10">
+        <div class="flex justify-center mb-6">
+          <img src="/logo.png" alt="Logo" class="h-20 w-auto">
         </div>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+          <div>
+            <label for="email" class="block text-sm font-bold text-gray-700">Username</label>
+            <div class="mt-1">
+              <input
+                id="username"
+                formControlName="email"
+                type="text"
+                required
+                placeholder="Enter your Username"
+                class="appearance-none block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2D5A95] focus:border-[#2D5A95] sm:text-sm"
+              >
+            </div>
+            <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="mt-1 text-sm text-red-600">
+              <div *ngIf="email?.errors?.['required']">Username is required</div>
+              <div *ngIf="email?.errors?.['email']">Please enter a valid username</div>
+            </div>
+          </div>
 
-        <div>
-          <label for="password" class="block text-sm font-bold text-gray-700">
-            Password
-          </label>
-          <div class="relative">
-            <input
-              id="password"
-              formControlName="password"
-              [type]="showPassword ? 'text' : 'password'"
-              required
-              class="appearance-none block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2D5A95] focus:border-[#2D5A95] sm:text-sm"
-              placeholder="Enter your Password"
-            >
+          <div>
+            <label for="password" class="block text-sm font-bold text-gray-700">Password</label>
+            <div class="relative">
+              <input
+                id="password"
+                formControlName="password"
+                [type]="showPassword ? 'text' : 'password'"
+                required
+                placeholder="Enter your Password"
+                class="appearance-none block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2D5A95] focus:border-[#2D5A95] sm:text-sm"
+              >
+              <button
+                type="button"
+                (click)="togglePasswordVisibility()"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                <ng-icon
+                  [name]="showPassword ? 'heroEye' : 'heroEyeSlash'"
+                  class="h-5 w-5 text-gray-400 hover:text-gray-500"
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
+          </div>
+
+          <div>
             <button
-              type="button"
-              (click)="togglePasswordVisibility()"
-              class="absolute inset-y-0 right-0 pr-3 flex items-center"
+              type="submit"
+              [disabled]="loginForm.invalid"
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#2D5A95]/85 hover:bg-[#2D5A95] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2D5A95] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <ng-icon
-                [name]="showPassword ? 'heroEye' : 'heroEyeSlash'"
-                class="h-5 w-5 text-gray-400 hover:text-gray-500"
-                aria-hidden="true"
-              />
+              Login
             </button>
           </div>
-        </div>
 
-        <div>
-          <button
-            type="submit"
-            [disabled]="loginForm.invalid"
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#2D5A95]/85 hover:bg-[#2D5A95] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2D5A95] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Login
-          </button>
-        </div>
+          <div *ngIf="errorMessage" class="text-center text-sm text-red-600">
+            {{ errorMessage }}
+          </div>
 
-        <!-- Add error message display -->
-        <div *ngIf="errorMessage" class="text-center text-sm text-red-600">
-          {{ errorMessage }}
-        </div>
+          <div class="text-center text-xs text-gray-500">
+            For queries or assistance, contact info <br>
+            <a href="mailto:support@office.in" class="text-blue-600 hover:text-blue-700">support&#64;office.in</a>
+          </div>
 
-        <div class="text-center text-xs text-gray-500">
-          For queries or assistance, contact info <br>
-          <a href="mailto:support@office.in" class="text-blue-600 hover:text-blue-700">support&#64;office.in</a>
-        </div>
-
-        <div class="text-center text-xs text-gray-500 flex justify-center items-center">
-          Powered by <img src="/offee.png" alt="offee" class="h-5 w-auto">
-        </div>
-      </form>
+          <div class="text-center text-xs text-gray-500 flex justify-center items-center">
+            Powered by <img src="/offee.png" alt="offee" class="h-5 w-auto ml-1">
+          </div>
+        </form>
+      </div>
     </div>
+
   </div>
 </div>

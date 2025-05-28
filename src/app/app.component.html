@@ -4,8 +4,9 @@
   </div>
   <div class="flex-grow">
     <app-tab *ngIf="!isLoginPage" [Data]="data"></app-tab>
-    <router-outlet></router-outlet>
+
   </div>
+  <router-outlet></router-outlet>
   <footer *ngIf="!isLoginPage" class="text-base font-bold flex justify-between items-center bg-[#eeeeee] py-3 text-[#1E1E1E] shadow-inner px-10">
     <div>Version 1.0.2</div>
     <div class="flex">Powered By <img src="/offee.png" alt="offee" class="h-6 w-auto"></div>

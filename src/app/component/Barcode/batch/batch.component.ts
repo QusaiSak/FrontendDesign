@@ -1,112 +1,339 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FiltersearchComponent } from "../../filtersearch/filtersearch.component";
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
+import { firstValueFrom } from 'rxjs';
+import { DataService } from '../../../service/data.service';
 import { TableComponent } from "../../table/table.component";
-import { BatchData, TitleItem } from '../../env.interface';
+
+interface VerticalData {
+  verticalId: number;
+  vertical_name: string;
+  // Add other relevant fields if needed by the component, e.g., vertical_code
+  verticalCode?: string;
+  status?: number;
+}
+
+interface HubData {
+  hubId: number;
+  hubName: string;
+  verticalId?: number; // From API
+  hubCode?: string;    // From API
+}
+
+interface CourseData { // Assuming structure based on other APIs
+  courseId: number;
+  courseName: string;
+  hubId?: number;
+  courseCode?: string;
+}
+
+interface BatchData { // This matches the one in DataService
+  batchId: number;
+  batch_code: string;
+}
+
+interface SemesterData {
+  examId: number;
+  semester: string;
+}
+
+interface FilterOption {
+  id: number; // Keep as number
+  name: string;
+}
+
+interface DropdownConfig {
+  label: string;
+  key: string; // This refers to the camelCase key in selectedFilters
+  idKey?: string; // This refers to the camelCase key for ID in the data
+  parentKey?: string;
+}
+
+interface FilterData {
+  [key: string]: number | null; // e.g., { verticalId: 1, hubId: 539 }
+}
+
+
+interface BatchRecord {
+  verticalId?: number;
+  vertical_name?: string;
+  hubId?: number;
+  hubName?: string;
+  courseId?: number;
+  courseName?: string;
+  batchId?: number;
+  batch_code?: string;
+  semester?: string;
+  examType?: string;
+}
+
+
+
+
 
 @Component({
   selector: 'app-batch',
   standalone: true,
-  imports: [CommonModule, FormsModule, FiltersearchComponent, TableComponent],
+  imports: [CommonModule, FormsModule, NgIcon, TableComponent],
   templateUrl: './batch.component.html',
-  styleUrl: './batch.component.css'
+  styleUrl: './batch.component.css',
+  viewProviders: [provideIcons({ heroMagnifyingGlass })]
 })
-export class BatchComponent {
-  filteredData = signal<BatchData[]>([]);
-  searchTerm = signal('');
-  title :TitleItem[] = [
-    { key: 'verticalName', label: 'Vertical Name' },
+export class BatchComponent implements OnInit {
+  private dataService = inject(DataService);
+  filteredData = signal<BatchRecord[]>([]);
+  initialData = signal<BatchRecord[]>([]);
+  isLoading = signal<boolean>(false);
+
+  columns = [
+    { key: 'vertical_name', label: 'Vertical Name' },
     { key: 'hubName', label: 'Hub Name' },
     { key: 'courseName', label: 'Course Name' },
-    { key: 'batchName', label: 'Batch Name' },
+    { key: 'batch_code', label: 'Batch Name' },
     { key: 'semester', label: 'Semester' },
-    { key: 'examType', label: 'Exam Type' },
     { key: 'download', label: 'Download' }
   ];
-  dataBa = signal<BatchData[]>([
-    {
-      verticalName: 'Healthcare - HC',
-      hubName: 'Iqraa Academy of Iqraa International Hospital and Research Centre - HC0421',
-      courseName: 'BSc In Dialysis Technology - HCC193',
-      batchName: 'HC0421/C193/B02/S25',
-      semester: '1',
-      examType: 'Main',
-      download: 'download'
-    },
-    {
-      verticalName: 'Healthcare - HC',
-      hubName: 'Iqraa Academy of Iqraa International Hospital and Research Centre - HC0421',
-      courseName: 'BSc In Dialysis Technology - HCC193',
-      batchName: 'HC0421/C193/B02/S25',
-      semester: '1',
-      examType: 'Supplementary 1',
-      download: 'download'
-    },
-     { // Added another sample data point with different values
-      verticalName: 'Engineering',
-      hubName: 'Tech University Hub',
-      courseName: 'B.Tech Computer Science',
-      batchName: 'TU/CS/B01/S25',
-      semester: '2',
-      examType: 'Main',
-      download: 'download'
-    }
-  ]);
 
-  // Define the configuration for your dropdowns
-  dropdownConfigs: any[] = [
-    { label: 'Vertical', key: 'verticalName' },
-    { label: 'Hub', key: 'hubName' },
-    { label: 'Course', key: 'courseName' },
-    { label: 'Batch', key: 'batchName' },
-    { label: 'Semester', key: 'semester' },
-    { label: 'Exam Type', key: 'examType' },
+  dropdownConfigs: DropdownConfig[] = [
+    { label: 'Vertical', key: 'vertical_name', idKey: 'verticalId' },
+    { label: 'Hub', key: 'hubName', idKey: 'hubId', parentKey: 'vertical_name' },
+    { label: 'Course', key: 'courseName', idKey: 'courseId', parentKey: 'hubName' },
+    { label: 'Batch', key: 'batch_code', idKey: 'batchId', parentKey: 'courseName' },
+    { label: 'Semester', key: 'semesterName', parentKey: 'batch_code' },
   ];
 
-  // Signal to hold selected filter values dynamically
-  selectedFilters = signal<{ [key: string]: string | null }>({});
+  searchTerm = signal<string>('');
+  selectedFilters = signal<FilterData>({});
+  dropdownOptions = signal<{ [key: string]: FilterOption[] }>({});
+  dataForPdf = signal<BatchRecord[] | null>(null);
 
-  // Computed signal to generate unique options dynamically based on configs and other selected filters
-  dynamicUniqueOptions = computed(() => {
-    const uniqueOptions: { [key: string]: (string | number)[] } = {};
-    const currentData = this.dataBa();
-    const currentFilters = this.selectedFilters();
-
-    this.dropdownConfigs.forEach(config => {
-      // Filter the data based on *other* selected filters
-      const filteredData = currentData.filter(item => {
-        return Object.keys(currentFilters).every(filterKey => {
-          // Apply filter only if it's not the current dropdown's key and has a value
-          if (filterKey !== config.key && currentFilters[filterKey] !== null) {
-            return (item as any)[filterKey] === currentFilters[filterKey];
-          }
-          return true; // Don't filter by the current dropdown's key or if filter is null
-        });
-      });
-
-      // Get unique values for the current dropdown's key from the filtered data
-      const values = filteredData.map(item => (item as any)[config.key]);
-      uniqueOptions[config.key] = [...new Set(values)];
+  disabledState = computed(() => {
+    const disabled: { [key: string]: boolean } = {};
+    this.dropdownConfigs.forEach((config) => {
+      if (config.parentKey) {
+        const parentSelectedValue = this.selectedFilters()[config.parentKey];
+        disabled[config.key] = !parentSelectedValue;
+      } else {
+        disabled[config.key] = false;
+      }
     });
-
-    return uniqueOptions;
+    return disabled;
   });
 
-  // Computed signal for the combined filters (used for the table)
-  currentFilters = this.selectedFilters.asReadonly();
+  ngOnInit() {
+    const initialOptions: { [key: string]: FilterOption[] } = {};
+    this.dropdownConfigs.forEach(config => {
+      initialOptions[config.key] = [];
+    });
+    this.dropdownOptions.set(initialOptions);
+    this.loadInitialDropdown();
+    this.filteredData.set([]);
+    this.dataForPdf.set(null);
+  }
 
-  // Method to update a specific filter value
-  onFilterChange(key: string, event: Event) {
-    const value = (event.target as HTMLSelectElement).value;
-    // Set to null if the "- Select -" option is chosen
-    this.selectedFilters.update(filters => ({
-      ...filters,
-      [key]: value === '- Select -' ? null : value
+
+  private async loadInitialDropdown() {
+    const firstConfig = this.dropdownConfigs.find(config => !config.parentKey);
+    if (firstConfig) {
+      await this.loadOptionsForDropdown(firstConfig.key);
+    }
+  }
+
+  async onFilterChange(key: string, selectedValue: string | null) {
+    const firstDropdownKey = this.dropdownConfigs.find(c => !c.parentKey)?.key;
+    if (key !== firstDropdownKey && this.disabledState()[key]) {
+        return;
+    }
+
+    this.isLoading.set(true);
+
+    const numericIdValue = (selectedValue && selectedValue !== 'null') ? Number(selectedValue) : null;
+
+    this.selectedFilters.update(current => ({
+      ...current,
+      [key]: numericIdValue
     }));
+
+    const currentIndex = this.dropdownConfigs.findIndex(c => c.key === key);
+
+    for (let i = currentIndex + 1; i < this.dropdownConfigs.length; i++) {
+      const dependentKey = this.dropdownConfigs[i].key;
+      this.selectedFilters.update(current => ({ ...current, [dependentKey]: null }));
+      this.dropdownOptions.update(current => ({ ...current, [dependentKey]: [] }));
+    }
+
+    if (numericIdValue !== null && currentIndex < this.dropdownConfigs.length - 1) {
+      const nextConfig = this.dropdownConfigs[currentIndex + 1];
+      if (nextConfig && nextConfig.parentKey === key) {
+         await this.loadOptionsForDropdown(nextConfig.key, numericIdValue);
+      }
+    }
+    this.isLoading.set(false);
   }
 
-  onFilteredDataChange(data: BatchData[]) {
-    this.filteredData.set(data);
+  async loadOptionsForDropdown(keyToLoad: string, parentIdValue?: number) {
+    this.isLoading.set(true);
+    let options: FilterOption[] = [];
+    const config = this.dropdownConfigs.find(c => c.key === keyToLoad);
+
+    if (!config) {
+      this.isLoading.set(false);
+      console.error(`BatchComponent: Config not found for dropdown key: ${keyToLoad}`);
+      this.dropdownOptions.update(current => ({ ...current, [keyToLoad]: [] })); // Clear options for this key
+      return;
+    }
+
+    try {
+      if (keyToLoad === 'vertical_name') {
+        const verticals = await firstValueFrom(this.dataService.getVerticalData());
+        if (Array.isArray(verticals)) {
+          options = verticals.map(v => ({ id: v.verticalId, name: v.vertical_name }));
+        } else {
+          console.warn(`BatchComponent: Expected array for verticals, received:`, verticals);
+        }
+      } else if (keyToLoad === 'hubName' && parentIdValue != null) {
+        const hubs = await firstValueFrom(this.dataService.getHubData(parentIdValue));
+        if (Array.isArray(hubs)) {
+          options = hubs.map(h => ({ id: h.hubId, name: h.hubName }));
+        } else {
+          console.warn(`BatchComponent: Expected array for hubs (parentId: ${parentIdValue}), received:`, hubs);
+        }
+      } else if (keyToLoad === 'courseName' && parentIdValue != null) {
+        const courses = await firstValueFrom(this.dataService.getCoursesFromHub(parentIdValue));
+        if (Array.isArray(courses)) {
+          options = courses.map(c => ({
+            id: c.courseId,
+            name: `${c.courseName}${c.courseCode ? ' - ' + c.courseCode : ''}`
+          }));
+        } else {
+          console.warn(`BatchComponent: Expected array for courses (parentId: ${parentIdValue}), received:`, courses);
+        }
+      } else if (keyToLoad === 'batch_code' && parentIdValue != null) { // parentIdValue is courseId
+        const selectedHubId = this.selectedFilters()['hubName'] as number | undefined;
+
+        if (selectedHubId != null) {
+          console.log(`BatchComponent: Loading batches for hubId: ${selectedHubId} (courseId: ${parentIdValue})`);
+          const rawBatches = await firstValueFrom(this.dataService.getBatchesFromCourseHub(selectedHubId));
+
+          if (Array.isArray(rawBatches)) {
+            options = rawBatches
+              .filter(b => b && b.batchId != null && b.batch_code != null) // Ensure item and properties exist
+              .map(b => ({
+                id: b.batchId,
+                name: b.batch_code
+              }));
+            if (options.length === 0 && rawBatches.length > 0) {
+              console.warn(`BatchComponent: rawBatches were present but all filtered out for hubId: ${selectedHubId}. Check batchId and batch_code properties.`, rawBatches);
+            }
+          } else {
+            console.warn(`BatchComponent: Expected an array of batches for hubId ${selectedHubId}, but received:`, rawBatches);
+          }
+        } else {
+          console.warn("BatchComponent: Cannot load batches because Hub ID is missing from selected filters.");
+        }
+      } else if (keyToLoad === 'semesterName' && parentIdValue != null) { // parentIdValue is batchId
+        const selectedBatchId = parentIdValue;
+        const semesters = await firstValueFrom(this.dataService.getSemesterData(selectedBatchId));
+        if (Array.isArray(semesters)) {
+          options = semesters.map((s) => ({
+            id: s.examId,
+            name: s.semester
+          }));
+        } else {
+          console.warn(`BatchComponent: Expected array for semesters (parentId: ${selectedBatchId}), received:`, semesters);
+        }
+      }
+      // Add other 'else if' blocks here for other dropdowns if needed
+
+      this.dropdownOptions.update(current => ({
+        ...current,
+        [keyToLoad]: options // options will be empty if issues occurred
+      }));
+    } catch (error) {
+      console.error(`BatchComponent: Error loading options for ${keyToLoad} (parentIdValue: ${parentIdValue}):`, error);
+      this.dropdownOptions.update(current => ({ ...current, [keyToLoad]: [] })); // Set to empty on error
+    } finally {
+      this.isLoading.set(false);
+    }
   }
+
+  async applyFilters() {
+    this.isLoading.set(true);
+    this.filteredData.set([]);
+    this.dataForPdf.set(null);
+
+    try {
+      const currentSelectedFilters = this.selectedFilters();
+      const verticalId = currentSelectedFilters['vertical_name'];
+      const hubId = currentSelectedFilters['hubName'];
+      const courseId = currentSelectedFilters['courseName'];
+      const batchId = currentSelectedFilters['batch_code'];
+      const semester = this.dropdownOptions()['semesterName'].find(opt => opt.id === currentSelectedFilters['semesterName'])?.name;
+
+      const filtersToEmit: FilterData = {
+        ...currentSelectedFilters,
+        examType: 1
+      };
+
+      if (courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined)  {
+        console.log(`Service call with Course ID: ${courseId}, Batch ID: ${batchId}`);
+
+        const rawData = await firstValueFrom<any[]>(
+          this.dataService.getfilterdata(verticalId, hubId, courseId, batchId, semester)
+        );
+
+        console.log('BatchComponent: Received raw data:', rawData);
+
+        const processedTableData: BatchRecord[] = rawData.map(item => ({
+          vertical_name: item.verticalName || item.vertical_name,
+          hubName: item.hubName,
+          courseName: item.courseName,
+          batch_code: item.batchCode || item.batch_code,
+          semester: item.semesterName || item.semester,
+        }));
+
+        this.filteredData.set(processedTableData);
+        if (processedTableData.length > 0) {
+          this.dataForPdf.set(processedTableData);
+        } else {
+          this.dataForPdf.set(null);
+        }
+        console.log('BatchComponent: Filtered data set for table and PDF:', processedTableData);
+
+        console.log(`Emitting filters state:`, filtersToEmit);
+        console.log(`Received filtered data to make PDF:`, processedTableData);
+      }
+    } catch (error) {
+      console.error('Error during applyFilters or PDF generation:', error);
+      const errorFiltersToEmit: FilterData = {
+        ...this.selectedFilters(),
+        examType: 1
+      };
+      this.filteredData.set([]);
+      this.dataForPdf.set(null);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+
+  async clearAll() {
+    this.searchTerm.set('');
+    this.selectedFilters.set({});
+    this.filteredData.set([]);
+    this.dataForPdf.set(null);
+
+    const initialOptions: { [key: string]: FilterOption[] } = {};
+    this.dropdownConfigs.forEach(config => {
+      initialOptions[config.key] = [];
+    });
+    this.dropdownOptions.set(initialOptions);
+
+    await this.loadInitialDropdown();
+    console.log('BatchComponent: Filters cleared.');
+  }
+
+
 }

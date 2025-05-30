@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
 import { TitleItem } from '../env.interface';
 
 @Component({
@@ -12,18 +12,40 @@ import { TitleItem } from '../env.interface';
 export class TableComponent {
   @Input() cellPadding: string = 'px-4 py-2';
   @Input() cellMargin: string = 'm-0';
-  @Input() data: any[] = [];
+  @Input() set data(value: any[]) {
+    this.tableData.set(value || []);
+  }
   @Input() title: TitleItem[] = [];
   @Input() maxHeight?: string;
   @Input() minWidth?: string = '150px';
   @Output() rowClick = new EventEmitter<any>();
+  @Input() columns: any[] = [];
+  @Output() actionClicked = new EventEmitter<{action: string, item: any}>();
+
+  tableData = signal<any[]>([]);
+  showTable = signal<boolean>(false);
+
+  hasData = computed(() => this.tableData().length > 0);
 
   onRowClick(item: any) {
     this.rowClick.emit(item);
   }
 
-  // Add this helper method
-  isLinkColumn(key: string): boolean {
+  // Helper method to identify action columns
+  isActionColumn(key: string): boolean {
     return key === 'download' || key === 'view';
+  }
+
+  // Method to handle click on action buttons
+  onActionClick(item: any, columnKey: string, event: Event): void {
+    event.preventDefault();
+    this.actionClicked.emit({ action: columnKey, item });
+  }
+
+  // Add this method to handle filter changes
+  onFilterChange(filterData: any) {
+    this.showTable.set(true);
+    // Update table data based on filters
+    // Your filtering logic here
   }
 }

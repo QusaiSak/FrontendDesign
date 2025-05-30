@@ -1,0 +1,167 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+// Define interfaces for the raw API response structures
+interface ApiVertical {
+  verticalId: number;
+  vertical_code: string;
+  vertical_name: string;
+  status: number;
+}
+
+interface ApiHub {
+  hubId: number;
+  verticalId: number;
+  hub_code: string;
+  hubName: string; // This one is already camelCase in the example
+}
+
+// Assuming similar structures for Courses and Batches from API
+interface ApiCourse {
+  courseId: number; // Assuming
+  course_code: string; // Assuming
+  courseName: string; // Assuming
+}
+
+interface ApiBatch {
+  batchId: number;  // Assuming
+  batch_code: string; // Assuming
+}
+
+interface ApiSemester{
+  examId: number;
+  semester: string;
+}
+
+// Component-facing interfaces (camelCase)
+export interface VerticalData {
+  verticalId: number;
+  verticalCode: string;
+  vertical_name: string;
+  status: number;
+}
+
+export interface HubData {
+  hubId: number;
+  verticalId: number;
+  hubCode: string;
+  hubName: string;
+}
+
+export interface CourseData {
+  courseId: number;
+  courseCode: string;
+  courseName: string;
+}
+
+export interface BatchData {
+  batchId: number;
+  batch_code: string;
+}
+
+export interface SemesterData {
+  examId: number;
+  semester: string;
+}
+
+// For the filter payload
+export interface FilterData {
+  [key: string]: number | null;
+}
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DataService {
+  private http = inject(HttpClient);
+  // Base URL for the live APIs
+  private baseUrl = 'http://192.168.0.137:5002/api';
+  //https://tiss.offee.in/integration`
+  constructor() { }
+
+  getVerticalData(): Observable<VerticalData[]> {
+    return this.http.get<{ status: number; message: string; data: ApiVertical[] }>(
+      `${this.baseUrl}/verticals/getAllVerticals`
+    ).pipe(
+      map(response => response.data.map(apiV => ({
+        verticalId: apiV.verticalId,
+        verticalCode: apiV.vertical_code,
+        vertical_name: apiV.vertical_name,
+        status: apiV.status
+      })))
+    );
+  }
+
+  getHubData(verticalId: number): Observable<HubData[]> {
+    return this.http.get<{ status: number; message: string; data: ApiHub[] }>(
+      `${this.baseUrl}/hubs/getHubsFromVertical?verticalId=${verticalId}`
+    ).pipe(
+      map(response => response.data.map(apiH => ({
+        hubId: apiH.hubId,
+        verticalId: apiH.verticalId,
+        hubCode: apiH.hub_code,
+        hubName: apiH.hubName // Already camelCase in API
+      })))
+    );
+  }
+
+  // Assuming Course API structure and endpoint
+  getCoursesFromHub(hubId: number): Observable<CourseData[]> {
+    // IMPORTANT: Replace with actual Course API endpoint and structure
+    return this.http.get<{ status: number; message: string; data: ApiCourse[] }>(
+      `${this.baseUrl}/courses/getCoursesFromVertical?hubId=${hubId}` // GUESSING Endpoint
+    ).pipe(
+      map(response => response.data.map(apiC => ({
+        courseId: apiC.courseId,
+        courseCode: apiC.course_code,
+        courseName: apiC.courseName
+      })))
+    );
+  }
+
+  // Assuming Batch API structure and endpoint
+  getBatchesFromCourseHub(hubId: number): Observable<BatchData[]> {
+    return this.http.get<{ status: number; message: string; data: ApiBatch[] }>(
+      // GUESSING Endpoint
+      `${this.baseUrl}/batches/getBatchesFromCourseHub?hubId=${hubId}`
+    ).pipe(
+      map(response => response.data.map(apiB => ({
+        batchId: apiB.batchId,
+        batch_code: apiB.batch_code,
+      })))
+    );
+  }
+
+  getSemesterData(batchId: number): Observable<SemesterData[]> {
+    return this.http.get<{ status: number; message: string; data: ApiSemester[] }>(
+      `${this.baseUrl}/courses/getSemesterFromBatch?batchId=${batchId}`
+    ).pipe(
+      map(response => response.data.map(apiS => ({
+        examId: apiS.examId,
+        semester: apiS.semester
+      })))
+    );
+  }
+  getfilterdata(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
+    return this.http.get<{ status: number; message: string; data: any[] }>(
+      `${this.baseUrl}/courses/GetEnvelopeData?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}&batchId=${batchId}&semester=${semester}`
+    ).pipe(
+      map(response => response.data)
+    );
+  }
+
+  getpdfdata(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
+    return this.http.get<{ status: number; message: string; data: any[] }>(
+      `${this.baseUrl}/courses/GetSubjects4PDF?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}&batchId=${batchId}&semester=${semester}`
+    ).pipe(
+      map(response => response.data)
+    );
+  }
+
+  makepdf(data: any): Observable<Blob> {
+    return this.http.post(`http://localhost:3000/api/generate-pdf`, { forms: data }, { responseType: 'blob' });
+  }
+}

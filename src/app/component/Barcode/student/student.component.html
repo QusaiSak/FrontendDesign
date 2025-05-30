@@ -3,15 +3,88 @@
     <h1 class="text-3xl font-semibold text-gray-900">Student Schedule Report</h1>
   </div>
 
-  <app-filtersearch
-    [dropdownConfigs]="dropdownConfigs"
-    [data]="dataSt()"
-    (filteredDataChange)="onFilteredDataChange($event)"
-  ></app-filtersearch>
+  <div class="container">
+    <div class="container">
+      <div class="px-6 py-4">
+        <label class="flex flex-col min-w-40 h-10 w-full">
+          <div class="flex w-full flex-1 items-stretch rounded-xl h-full border-[1px]">
+            <div class="text-gray-900 flex border-none items-center justify-center pl-4 rounded-l-xl border-r-0 text-xl">
+              <ng-icon name="heroMagnifyingGlass"/>
+            </div>
+            <input
+              type="text"
+              [ngModel]="searchTerm()"
+              (ngModelChange)="searchTerm.set($event)"
+              placeholder="Search by batch name (min. 3 characters)..."
+              class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-gray-900 font-noto-sans focus:outline-0 focus:ring-0 border-none focus:border-none h-full placeholder:text-gray-600 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+              [disabled]="isLoading()"
+            />
+          </div>
+        </label>
+      </div>
 
-  <app-table
-    [data]="filteredData()"
-    [title]="title"
-  ></app-table>
+      <!-- Filters Section -->
+      <div class="px-6 py-4">
+        <!-- Dropdowns Container -->
+        <div class="flex flex-wrap gap-3 mb-4">
+          @for (config of dropdownConfigs; track config.key) {
+            <div class="flex items-center">
+              <div class="relative">
+                <select
+                  class="peer h-9 w-28  px-2 border-[1px] rounded-xl text-sm font-medium text-gray-900 appearance-none focus:outline-none focus:ring-0 disabled:bg-gray-100 disabled:text-gray-400"
+                  [ngModel]="selectedFilters()[config.key]"
+                  (ngModelChange)="onFilterChange(config.key, $event)"
+                  [disabled]="disabledState()[config.key] || isLoading()"
+                  required
+                >
+                  <option value=""></option>
+                  @for (option of dropdownOptions()[config.key]; track option.id) {
+                    <option [value]="option.id" >{{ option.name }}</option>
+                  }
+                </select>
+                <label
+                  class="absolute truncate left-2 top-2 text-sm transition-all duration-300
+                         peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:text-blue-600
+                         peer-valid:-translate-y-4 peer-valid:scale-75 peer-valid:text-blue-600
+                         bg-white px-1 pointer-events-none disabled:bg-gray-100"
+                  [class.text-gray-400]="disabledState()[config.key]"
+                >
+                  {{ config.label.length > 10 ? (config.label | slice:0:10) + '...' : config.label }}
+                </label>
+                <!-- Dropdown arrow -->
+                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Buttons Container -->
+        <div class="flex gap-3">
+          <!-- Apply Filters Button -->
+          <button
+            (click)="applyFilters()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            <span>Apply Filters</span>
+          </button>
+
+          <!-- Clear Button -->
+          <button
+            (click)="clearAll()"
+            class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            Clear All
+          </button>
+        </div>
+    <app-table
+        [data]="filteredData()"
+        [columns]="columns"
+    ></app-table>
+
+  </div>
 </div>
 

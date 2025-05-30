@@ -145,9 +145,43 @@ export class DataService {
       })))
     );
   }
+
+
+  getfilterSubject(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
+    return this.http.get<{ status: number; message: string; data: any[] }>(
+      `${this.baseUrl}/courses/GetSubjects4Filter?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}&batchId=${batchId}&semester=${semester}`
+    ).pipe(
+      map(response => response.data)
+    );
+  }
+
   getfilterdata(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
     return this.http.get<{ status: number; message: string; data: any[] }>(
       `${this.baseUrl}/courses/GetEnvelopeData?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}&batchId=${batchId}&semester=${semester}`
+    ).pipe(
+      map(response => response.data)
+    );
+  }
+
+  getfilteredStudentData(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string,subjectId:number): Observable<any> {
+    return this.http.get<{ status: number; message: string; data: any[] }>(
+      `${this.baseUrl}/courses/?courseId=${courseId}&batchId=${batchId}&subjectId=${subjectId}`
+    ).pipe(
+      map(response => response.data)
+    );
+  }
+
+  getXLSstudentData(courseId:number,batchId:number,subjectId:number): Observable<any> {
+    return this.http.get<{ status: number; message: string; data: any[] }>(
+      `${this.baseUrl}/courses/GetStudentsXls?courseId=${courseId}&batchId=${batchId}&subjectId=${subjectId}`
+    ).pipe(
+      map(response => response.data)
+    );
+  }
+
+  getXLSbatchdata(verticalId:number,hubId:number,courseId:number): Observable<any> {
+    return this.http.get<{ status: number; message: string; data: any[] }>(
+      `${this.baseUrl}/courses/GetBatchesXls?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}`
     ).pipe(
       map(response => response.data)
     );
@@ -164,4 +198,5 @@ export class DataService {
   makepdf(data: any): Observable<Blob> {
     return this.http.post(`http://localhost:3000/api/generate-pdf`, { forms: data }, { responseType: 'blob' });
   }
+
 }

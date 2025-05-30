@@ -77,9 +77,9 @@ export class StudentComponent implements OnInit {
     { label: 'Course', key: 'courseName', idKey: 'courseId', parentKey: 'hubName' },
     { label: 'Batch', key: 'batch_code', idKey: 'batchId', parentKey: 'courseName' },
     { label: 'Semester', key: 'semesterName', parentKey: 'batch_code' },
-    { label: 'Category', key: 'catName', parentKey: 'semesterName' },
   ];
 
+  // { label: 'Subject', key: 'catName', parentKey: 'semesterName' },
   // { label: 'Exam Type', key: 'examType', parentKey: 'catName' }
   searchTerm = signal<string>('');
   selectedFilters = signal<FilterData>({});
@@ -217,9 +217,33 @@ export class StudentComponent implements OnInit {
         } else {
           console.warn(`BatchComponent: Expected array for semesters (parentId: ${selectedBatchId}), received:`, semesters);
         }
-      }
-      // Add other 'else if' blocks here for other dropdowns if needed
+      } else if (keyToLoad === 'catName' && parentIdValue != null) {
+        const currentSelectedFilters = this.selectedFilters();
+        const verticalId = currentSelectedFilters['vertical_name'];
+        const hubId = currentSelectedFilters['hubName'];
+        const courseId = currentSelectedFilters['courseName'];
+        const batchId = currentSelectedFilters['batch_code'];
+        const semester = this.dropdownOptions()['semesterName'].find(opt => opt.id === currentSelectedFilters['semesterName'])?.name;
+        if (courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined){
+          const rawData = await firstValueFrom<any[]>(
+            this.dataService.getfilterSubject(verticalId, hubId, courseId, batchId, semester)
+          );
+          if (Array.isArray(rawData)) {
+            options = rawData.map(item => ({
+              id: item.subjectId,
+              name: `${item.subjectName} ${item.subjectCode || ''}`
+            }));
+          } else {
+            console.warn(`BatchComponent: Expected an array of subjects for courseId ${courseId}, but received:`, rawData);
+          }
+        } else {
+          console.warn("BatchComponent: Cannot load subjects because some required filters are missing.");
+        }
 
+      }
+
+      // Add other 'else if' blocks here for other dropdowns if needed
+``
       this.dropdownOptions.update(current => ({
         ...current,
         [keyToLoad]: options // options will be empty if issues occurred
@@ -238,11 +262,13 @@ export class StudentComponent implements OnInit {
 
     try {
       const currentSelectedFilters = this.selectedFilters();
-      const verticalId = currentSelectedFilters['vertical_name'];
-      const hubId = currentSelectedFilters['hubName'];
       const courseId = currentSelectedFilters['courseName'];
       const batchId = currentSelectedFilters['batch_code'];
+      // const subjectId = currentSelectedFilters['catName'];
+      const verticalId = currentSelectedFilters['vertical_name'];
+      const hubId = currentSelectedFilters['hubName'];
       const semester = this.dropdownOptions()['semesterName'].find(opt => opt.id === currentSelectedFilters['semesterName'])?.name;
+
 
       const filtersToEmit: FilterData = {
         ...currentSelectedFilters,
@@ -253,7 +279,7 @@ export class StudentComponent implements OnInit {
         console.log(`Service call with Course ID: ${courseId}, Batch ID: ${batchId}`);
 
         const rawData = await firstValueFrom<any[]>(
-          this.dataService.getfilterdata(verticalId, hubId, courseId, batchId, semester)
+          this.dataService.getpdfdata(verticalId, hubId, courseId, batchId, semester)
         );
 
         console.log('BatchComponent: Received raw data:', rawData);
@@ -262,7 +288,7 @@ export class StudentComponent implements OnInit {
           // Construct catName
           let constructedCatName = '';
           if (item.subjectName && item.subjectCode) {
-            constructedCatName = `${item.subjectName} ${item.subjectCode}`;
+            constructedCatName = `${item.subjectName} ${item.subjectCode} ${item.subjectId}`;
           } else if (item.subjectName) {
             constructedCatName = item.subjectName;
           } else if (item.subjectCode) {

@@ -260,9 +260,7 @@ export class BatchComponent implements OnInit {
   }
 
   async applyFilters() {
-    this.isLoading.set(true);
     this.filteredData.set([]);
-    this.dataForPdf.set(null);
 
     try {
       const currentSelectedFilters = this.selectedFilters();
@@ -295,11 +293,6 @@ export class BatchComponent implements OnInit {
         }));
 
         this.filteredData.set(processedTableData);
-        if (processedTableData.length > 0) {
-          this.dataForPdf.set(processedTableData);
-        } else {
-          this.dataForPdf.set(null);
-        }
         console.log('BatchComponent: Filtered data set for table and PDF:', processedTableData);
 
         console.log(`Emitting filters state:`, filtersToEmit);
@@ -307,12 +300,9 @@ export class BatchComponent implements OnInit {
       }
     } catch (error) {
       console.error('Error during applyFilters or PDF generation:', error);
-      const errorFiltersToEmit: FilterData = {
-        ...this.selectedFilters(),
-        examType: 1
-      };
+
       this.filteredData.set([]);
-      this.dataForPdf.set(null);
+
     } finally {
       this.isLoading.set(false);
     }

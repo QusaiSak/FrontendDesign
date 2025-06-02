@@ -194,7 +194,7 @@ export class DataService {
   }
 
   makepdf(data: any): Observable<Blob> {
-    return this.http.post(`http://localhost:3000/api/generate-pdf`, { forms: data }, { responseType: 'blob' });
+    return this.http.post(`${this.baseUrl}/generate-pdf`, { forms: data }, { responseType: 'blob' });
   }
 
 }

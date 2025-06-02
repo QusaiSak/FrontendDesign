@@ -5,8 +5,8 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { firstValueFrom } from 'rxjs';
 import { DataService } from '../../../service/data.service';
-import { TableComponent } from "../../table/table.component";
 import { DropdownConfig, FilterData, FilterOption, StudentRecord } from '../../env.interface';
+import { TableComponent } from "../../table/table.component";
 
 @Component({
   selector: 'app-student',
@@ -241,7 +241,6 @@ export class StudentComponent implements OnInit {
       };
 
       if (courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined)  {
-        console.log(`Service call with Course ID: ${courseId}, Batch ID: ${batchId}`);
 
         const rawData = await firstValueFrom<any[]>(
           this.dataService.getpdfdata(verticalId, hubId, courseId, batchId, semester)
@@ -253,7 +252,7 @@ export class StudentComponent implements OnInit {
           // Construct catName
           let constructedCatName = '';
           if (item.subjectName && item.subjectCode) {
-            constructedCatName = `${item.subjectName} ${item.subjectCode} ${item.subjectId}`;
+            constructedCatName = `${item.subjectName} ${item.subjectCode}`;
           } else if (item.subjectName) {
             constructedCatName = item.subjectName;
           } else if (item.subjectCode) {
@@ -289,11 +288,6 @@ export class StudentComponent implements OnInit {
         });
 
         this.filteredData.set(processedTableData);
-
-        console.log('BatchComponent: Filtered data set for table and PDF:', processedTableData);
-
-        console.log(`Emitting filters state:`, filtersToEmit);
-        console.log(`Received filtered data to make PDF:`, processedTableData);
       }
     } catch (error) {
       console.error('Error during applyFilters or PDF generation:', error);

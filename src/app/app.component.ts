@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { environment } from '../environments/environment';
 import { HeaderComponent } from "./component/header/header.component";
 import { TabComponent } from "./component/tab/tab.component";
 
@@ -13,6 +14,7 @@ import { TabComponent } from "./component/tab/tab.component";
 export class AppComponent {
   title = 'concepts';
   isLoginPage = false;
+  version = environment.version;
 
 
   constructor(private router: Router) {

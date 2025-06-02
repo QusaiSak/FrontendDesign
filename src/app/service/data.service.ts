@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 // Define interfaces for the raw API response structures
 interface ApiVertical {
@@ -77,7 +78,7 @@ export interface FilterData {
 })
 export class DataService {
   private http = inject(HttpClient);
-  private baseUrl = 'https://tiss.offee.in/integration';
+  private baseUrl = environment.apiUrl;
   // http://192.168.0.137:5002/api
   // https://tiss.offee.in/integration
   constructor() { }

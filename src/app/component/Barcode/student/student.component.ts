@@ -6,42 +6,7 @@ import { heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { firstValueFrom } from 'rxjs';
 import { DataService } from '../../../service/data.service';
 import { TableComponent } from "../../table/table.component";
-// Define interfaces locally if not available in env.interface.ts
-interface StudentRecord {
-  verticalId?: number;
-  verticalName?: string;
-  hubId?: number;
-  hubName?: string;
-  courseId?: number;
-  courseName?: string;
-  batchId?: number;
-  batchName?: string;
-  semester?: string;
-  examCatType?: string;
-  examType?: string;
-  download?: string;
-
-  // Added for constructing catName
-  subjectName?: string;
-  subjectCode?: string;
-  catName?: string; // Will be constructed
-
-  // Fields for constructing schedule
-  examDate?: string; // e.g., "dd/mm/yyyy"
-  fromTime?: string;
-  toTime?: string;
-  schedule?: string; // Will be constructed: "dd/mm/yyyy fromTime - toTime"
-}
-
-interface FilterOption {
-  id: number; // Keep as number
-  name: string;
-}
-
-interface FilterData {
-  [key: string]: number | null; // e.g., { verticalId: 1, hubId: 539 }
-}
-
+import { DropdownConfig, FilterData, FilterOption, StudentRecord } from '../../env.interface';
 
 @Component({
   selector: 'app-student',
@@ -71,7 +36,7 @@ export class StudentComponent implements OnInit {
     { key: 'download', label: 'Download' }
   ];
 
-  dropdownConfigs = [
+  dropdownConfigs: DropdownConfig[] = [
     { label: 'Vertical', key: 'vertical_name', idKey: 'verticalId' },
     { label: 'Hub', key: 'hubName', idKey: 'hubId', parentKey: 'vertical_name' },
     { label: 'Course', key: 'courseName', idKey: 'courseId', parentKey: 'hubName' },
@@ -206,7 +171,7 @@ export class StudentComponent implements OnInit {
         } else {
           console.warn("BatchComponent: Cannot load batches because Hub ID is missing from selected filters.");
         }
-      } else if (keyToLoad === 'semesterName' && parentIdValue != null) { // parentIdValue is batchId
+      } else if (keyToLoad === 'semesterName' && parentIdValue != null) {
         const selectedBatchId = parentIdValue;
         const semesters = await firstValueFrom(this.dataService.getSemesterData(selectedBatchId));
         if (Array.isArray(semesters)) {
@@ -351,20 +316,11 @@ export class StudentComponent implements OnInit {
     this.dropdownOptions.set(initialOptions);
 
     await this.loadInitialDropdown();
-    console.log('BatchComponent: Filters cleared.');
   }
   onFilteredDataChange(event: { data: StudentRecord[], filters: any, search: string }) {
-    console.log('[StudentComponent] onFilteredDataChange event:', event); // Log the whole event
 
     if (event && Array.isArray(event.data) && event.data.length > 0) {
-      console.log('[StudentComponent] Raw event.data:', JSON.parse(JSON.stringify(event.data))); // Log raw data
-      console.log('[StudentComponent] First item of raw event.data:', JSON.parse(JSON.stringify(event.data[0]))); // Log first raw item
-
       const processedData = event.data.map((item, index) => {
-        // Log the item being processed (especially the first one)
-        if (index === 0) {
-            console.log('[StudentComponent] Processing item (raw):', JSON.parse(JSON.stringify(item)));
-        }
 
         // Construct catName
         let constructedCatName = '';
@@ -391,19 +347,10 @@ export class StudentComponent implements OnInit {
           schedule: constructedSchedule || item.schedule || ''
         };
 
-        if (index === 0) {
-            console.log('[StudentComponent] Processed first item (with constructed fields):', JSON.parse(JSON.stringify(processedItem)));
-        }
         return processedItem;
       });
-      console.log('[StudentComponent] Final processedData to be set to signal:', JSON.parse(JSON.stringify(processedData)));
       this.filteredData.set(processedData);
     } else {
-      if (event && event.data && event.data.length === 0) {
-        console.log('[StudentComponent] onFilteredDataChange received empty event.data. Clearing table.');
-      } else {
-        console.warn('[StudentComponent] onFilteredDataChange event.data is not a non-empty array or event is problematic:', event);
-      }
       this.filteredData.set([]);
     }
   }

@@ -6,72 +6,7 @@ import { heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { firstValueFrom } from 'rxjs';
 import { DataService } from '../../../service/data.service';
 import { TableComponent } from "../../table/table.component";
-
-interface VerticalData {
-  verticalId: number;
-  vertical_name: string;
-  // Add other relevant fields if needed by the component, e.g., vertical_code
-  verticalCode?: string;
-  status?: number;
-}
-
-interface HubData {
-  hubId: number;
-  hubName: string;
-  verticalId?: number; // From API
-  hubCode?: string;    // From API
-}
-
-interface CourseData { // Assuming structure based on other APIs
-  courseId: number;
-  courseName: string;
-  hubId?: number;
-  courseCode?: string;
-}
-
-interface BatchData { // This matches the one in DataService
-  batchId: number;
-  batch_code: string;
-}
-
-interface SemesterData {
-  examId: number;
-  semester: string;
-}
-
-interface FilterOption {
-  id: number; // Keep as number
-  name: string;
-}
-
-interface DropdownConfig {
-  label: string;
-  key: string; // This refers to the camelCase key in selectedFilters
-  idKey?: string; // This refers to the camelCase key for ID in the data
-  parentKey?: string;
-}
-
-interface FilterData {
-  [key: string]: number | null; // e.g., { verticalId: 1, hubId: 539 }
-}
-
-
-interface BatchRecord {
-  verticalId?: number;
-  vertical_name?: string;
-  hubId?: number;
-  hubName?: string;
-  courseId?: number;
-  courseName?: string;
-  batchId?: number;
-  batch_code?: string;
-  semester?: string;
-  examType?: string;
-}
-
-
-
-
+import { BatchRecord, DropdownConfig, FilterData, FilterOption } from '../../env.interface';
 
 @Component({
   selector: 'app-batch',
@@ -107,7 +42,6 @@ export class BatchComponent implements OnInit {
   searchTerm = signal<string>('');
   selectedFilters = signal<FilterData>({});
   dropdownOptions = signal<{ [key: string]: FilterOption[] }>({});
-  dataForPdf = signal<BatchRecord[] | null>(null);
 
   disabledState = computed(() => {
     const disabled: { [key: string]: boolean } = {};
@@ -130,7 +64,6 @@ export class BatchComponent implements OnInit {
     this.dropdownOptions.set(initialOptions);
     this.loadInitialDropdown();
     this.filteredData.set([]);
-    this.dataForPdf.set(null);
   }
 
 
@@ -180,8 +113,7 @@ export class BatchComponent implements OnInit {
 
     if (!config) {
       this.isLoading.set(false);
-      console.error(`BatchComponent: Config not found for dropdown key: ${keyToLoad}`);
-      this.dropdownOptions.update(current => ({ ...current, [keyToLoad]: [] })); // Clear options for this key
+      this.dropdownOptions.update(current => ({ ...current, [keyToLoad]: [] }));
       return;
     }
 
@@ -210,7 +142,7 @@ export class BatchComponent implements OnInit {
         } else {
           console.warn(`BatchComponent: Expected array for courses (parentId: ${parentIdValue}), received:`, courses);
         }
-      } else if (keyToLoad === 'batch_code' && parentIdValue != null) { // parentIdValue is courseId
+      } else if (keyToLoad === 'batch_code' && parentIdValue != null) {
         const selectedHubId = this.selectedFilters()['hubName'] as number | undefined;
 
         if (selectedHubId != null) {
@@ -224,16 +156,13 @@ export class BatchComponent implements OnInit {
                 id: b.batchId,
                 name: b.batch_code
               }));
-            if (options.length === 0 && rawBatches.length > 0) {
-              console.warn(`BatchComponent: rawBatches were present but all filtered out for hubId: ${selectedHubId}. Check batchId and batch_code properties.`, rawBatches);
-            }
           } else {
             console.warn(`BatchComponent: Expected an array of batches for hubId ${selectedHubId}, but received:`, rawBatches);
           }
         } else {
           console.warn("BatchComponent: Cannot load batches because Hub ID is missing from selected filters.");
         }
-      } else if (keyToLoad === 'semesterName' && parentIdValue != null) { // parentIdValue is batchId
+      } else if (keyToLoad === 'semesterName' && parentIdValue != null) {
         const selectedBatchId = parentIdValue;
         const semesters = await firstValueFrom(this.dataService.getSemesterData(selectedBatchId));
         if (Array.isArray(semesters)) {
@@ -245,11 +174,9 @@ export class BatchComponent implements OnInit {
           console.warn(`BatchComponent: Expected array for semesters (parentId: ${selectedBatchId}), received:`, semesters);
         }
       }
-      // Add other 'else if' blocks here for other dropdowns if needed
-
       this.dropdownOptions.update(current => ({
         ...current,
-        [keyToLoad]: options // options will be empty if issues occurred
+        [keyToLoad]: options
       }));
     } catch (error) {
       console.error(`BatchComponent: Error loading options for ${keyToLoad} (parentIdValue: ${parentIdValue}):`, error);
@@ -270,19 +197,11 @@ export class BatchComponent implements OnInit {
       const batchId = currentSelectedFilters['batch_code'];
       const semester = this.dropdownOptions()['semesterName'].find(opt => opt.id === currentSelectedFilters['semesterName'])?.name;
 
-      const filtersToEmit: FilterData = {
-        ...currentSelectedFilters,
-        examType: 1
-      };
-
       if (courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined)  {
-        console.log(`Service call with Course ID: ${courseId}, Batch ID: ${batchId}`);
 
         const rawData = await firstValueFrom<any[]>(
           this.dataService.getfilterdata(verticalId, hubId, courseId, batchId, semester)
         );
-
-        console.log('BatchComponent: Received raw data:', rawData);
 
         const processedTableData: BatchRecord[] = rawData.map(item => ({
           vertical_name: item.verticalName || item.vertical_name,
@@ -293,10 +212,6 @@ export class BatchComponent implements OnInit {
         }));
 
         this.filteredData.set(processedTableData);
-        console.log('BatchComponent: Filtered data set for table and PDF:', processedTableData);
-
-        console.log(`Emitting filters state:`, filtersToEmit);
-        console.log(`Received filtered data to make PDF:`, processedTableData);
       }
     } catch (error) {
       console.error('Error during applyFilters or PDF generation:', error);
@@ -313,7 +228,6 @@ export class BatchComponent implements OnInit {
     this.searchTerm.set('');
     this.selectedFilters.set({});
     this.filteredData.set([]);
-    this.dataForPdf.set(null);
 
     const initialOptions: { [key: string]: FilterOption[] } = {};
     this.dropdownConfigs.forEach(config => {
@@ -322,7 +236,6 @@ export class BatchComponent implements OnInit {
     this.dropdownOptions.set(initialOptions);
 
     await this.loadInitialDropdown();
-    console.log('BatchComponent: Filters cleared.');
   }
 
 

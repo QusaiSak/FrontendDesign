@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -77,9 +77,9 @@ export interface FilterData {
 })
 export class DataService {
   private http = inject(HttpClient);
-  // Base URL for the live APIs
-  private baseUrl = 'http://192.168.0.137:5002/api';
-  //https://tiss.offee.in/integration`
+  private baseUrl = 'https://tiss.offee.in/integration';
+  // http://192.168.0.137:5002/api
+  // https://tiss.offee.in/integration
   constructor() { }
 
   getVerticalData(): Observable<VerticalData[]> {
@@ -103,16 +103,14 @@ export class DataService {
         hubId: apiH.hubId,
         verticalId: apiH.verticalId,
         hubCode: apiH.hub_code,
-        hubName: apiH.hubName // Already camelCase in API
+        hubName: apiH.hubName
       })))
     );
   }
 
-  // Assuming Course API structure and endpoint
   getCoursesFromHub(hubId: number): Observable<CourseData[]> {
-    // IMPORTANT: Replace with actual Course API endpoint and structure
     return this.http.get<{ status: number; message: string; data: ApiCourse[] }>(
-      `${this.baseUrl}/courses/getCoursesFromVertical?hubId=${hubId}` // GUESSING Endpoint
+      `${this.baseUrl}/courses/getCoursesFromVertical?hubId=${hubId}`
     ).pipe(
       map(response => response.data.map(apiC => ({
         courseId: apiC.courseId,
@@ -122,7 +120,6 @@ export class DataService {
     );
   }
 
-  // Assuming Batch API structure and endpoint
   getBatchesFromCourseHub(hubId: number): Observable<BatchData[]> {
     return this.http.get<{ status: number; message: string; data: ApiBatch[] }>(
       // GUESSING Endpoint
@@ -163,29 +160,29 @@ export class DataService {
     );
   }
 
-  getfilteredStudentData(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string,subjectId:number): Observable<any> {
-    return this.http.get<{ status: number; message: string; data: any[] }>(
-      `${this.baseUrl}/courses/?courseId=${courseId}&batchId=${batchId}&subjectId=${subjectId}`
-    ).pipe(
-      map(response => response.data)
-    );
-  }
+  // getfilteredStudentData(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string,subjectId:number): Observable<any> {
+  //   return this.http.get<{ status: number; message: string; data: any[] }>(
+  //     `${this.baseUrl}/courses/?courseId=${courseId}&batchId=${batchId}&subjectId=${subjectId}`
+  //   ).pipe(
+  //     map(response => response.data)
+  //   );
+  // }
 
-  getXLSstudentData(courseId:number,batchId:number,subjectId:number): Observable<any> {
-    return this.http.get<{ status: number; message: string; data: any[] }>(
-      `${this.baseUrl}/courses/GetStudentsXls?courseId=${courseId}&batchId=${batchId}&subjectId=${subjectId}`
-    ).pipe(
-      map(response => response.data)
-    );
-  }
+  // getXLSstudentData(courseId:number,batchId:number,subjectId:number): Observable<any> {
+  //   return this.http.get<{ status: number; message: string; data: any[] }>(
+  //     `${this.baseUrl}/courses/GetStudentsXls?courseId=${courseId}&batchId=${batchId}&subjectId=${subjectId}`
+  //   ).pipe(
+  //     map(response => response.data)
+  //   );
+  // }
 
-  getXLSbatchdata(verticalId:number,hubId:number,courseId:number): Observable<any> {
-    return this.http.get<{ status: number; message: string; data: any[] }>(
-      `${this.baseUrl}/courses/GetBatchesXls?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}`
-    ).pipe(
-      map(response => response.data)
-    );
-  }
+  // getXLSbatchdata(verticalId:number,hubId:number,courseId:number): Observable<any> {
+  //   return this.http.get<{ status: number; message: string; data: any[] }>(
+  //     `${this.baseUrl}/courses/GetBatchesXls?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}`
+  //   ).pipe(
+  //     map(response => response.data)
+  //   );
+  // }
 
   getpdfdata(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
     return this.http.get<{ status: number; message: string; data: any[] }>(

@@ -6,32 +6,8 @@ import { heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { firstValueFrom } from 'rxjs';
 import { DataService } from '../../../service/data.service';
 import { TableComponent } from "../../table/table.component";
+import { DropdownConfig, EnvelopeRecord, FilterData, FilterOption } from '../../env.interface';
 
-
-
-interface FilterOption {
-  id: number; // Keep as number
-  name: string;
-}
-
-
-interface FilterData {
-  [key: string]: number | null; // e.g., { verticalId: 1, hubId: 539 }
-}
-
-interface EnvelopeRecord {
-  verticalId?: number;
-  verticalName?: string;
-  hubId?: number;
-  hubName?: string;
-  courseId?: number;
-  courseName?: string;
-  batchId?: number;
-  batch_code?: string;
-  semester?: string;
-  examType?: string;
-  view?: string;
-}
 
 @Component({
   selector: 'app-envelope',
@@ -58,7 +34,7 @@ export class EnvelopeComponent implements OnInit {
     { key: 'view', label: 'View' }
   ];
 
-  dropdownConfigs = [
+  dropdownConfigs: DropdownConfig[] = [
     { label: 'Vertical', key: 'vertical_name', idKey: 'verticalId' },
     { label: 'Hub', key: 'hubName', idKey: 'hubId', parentKey: 'vertical_name' },
     { label: 'Course', key: 'courseName', idKey: 'courseId', parentKey: 'hubName' },
@@ -204,15 +180,14 @@ export class EnvelopeComponent implements OnInit {
           console.warn(`BatchComponent: Expected array for semesters (parentId: ${selectedBatchId}), received:`, semesters);
         }
       }
-      // Add other 'else if' blocks here for other dropdowns if needed
 
       this.dropdownOptions.update(current => ({
         ...current,
-        [keyToLoad]: options // options will be empty if issues occurred
+        [keyToLoad]: options
       }));
     } catch (error) {
       console.error(`BatchComponent: Error loading options for ${keyToLoad} (parentIdValue: ${parentIdValue}):`, error);
-      this.dropdownOptions.update(current => ({ ...current, [keyToLoad]: [] })); // Set to empty on error
+      this.dropdownOptions.update(current => ({ ...current, [keyToLoad]: [] }));
     } finally {
       this.isLoading.set(false);
     }
@@ -255,18 +230,9 @@ export class EnvelopeComponent implements OnInit {
         }));
 
         this.filteredData.set(processedTableData);
-
-        console.log('BatchComponent: Filtered data set for table and PDF:', processedTableData);
-
-        console.log(`Emitting filters state:`, filtersToEmit);
-        console.log(`Received filtered data to make PDF:`, processedTableData);
       }
     } catch (error) {
       console.error('Error during applyFilters or PDF generation:', error);
-      const errorFiltersToEmit: FilterData = {
-        ...this.selectedFilters(),
-        examType: 1
-      };
       this.filteredData.set([]);
     } finally {
       this.isLoading.set(false);
@@ -286,7 +252,6 @@ export class EnvelopeComponent implements OnInit {
     this.dropdownOptions.set(initialOptions);
 
     await this.loadInitialDropdown();
-    console.log('BatchComponent: Filters cleared.');
   }
 
 

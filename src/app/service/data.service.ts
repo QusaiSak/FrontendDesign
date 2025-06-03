@@ -123,7 +123,6 @@ export class DataService {
 
   getBatchesFromCourseHub(hubId: number): Observable<BatchData[]> {
     return this.http.get<{ status: number; message: string; data: ApiBatch[] }>(
-      // GUESSING Endpoint
       `${this.baseUrl}/batches/getBatchesFromCourseHub?hubId=${hubId}`
     ).pipe(
       map(response => response.data.map(apiB => ({
@@ -160,6 +159,8 @@ export class DataService {
       map(response => response.data)
     );
   }
+
+  
 
   // getfilteredStudentData(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string,subjectId:number): Observable<any> {
   //   return this.http.get<{ status: number; message: string; data: any[] }>(

@@ -5,8 +5,8 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { firstValueFrom } from 'rxjs';
 import { DataService } from '../../../service/data.service';
-import { TableComponent } from "../../table/table.component";
 import { DropdownConfig, EnvelopeRecord, FilterData, FilterOption } from '../../env.interface';
+import { TableComponent } from "../../table/table.component";
 
 
 @Component({
@@ -133,7 +133,7 @@ export class EnvelopeComponent implements OnInit {
       } else if (keyToLoad === 'hubName' && parentIdValue != null) {
         const hubs = await firstValueFrom(this.dataService.getHubData(parentIdValue));
         if (Array.isArray(hubs)) {
-          options = hubs.map(h => ({ id: h.hubId, name: h.hubName }));
+          options = hubs.map(h => ({ id: h.hubId, name: `${h.hubName} (${h.hubCode ?  h.hubCode : ''})` }));
         } else {
           console.warn(`BatchComponent: Expected array for hubs (parentId: ${parentIdValue}), received:`, hubs);
         }

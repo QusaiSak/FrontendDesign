@@ -10,18 +10,18 @@
           <div class="text-gray-900 flex border-none items-center justify-center pl-4 rounded-l-xl border-r-0 text-xl">
             <ng-icon name="heroMagnifyingGlass"/>
           </div>
-          <!-- (ngModelChange)="searchTerm.set($event); onSearchChange()" -->
           <input
             type="text"
             [ngModel]="searchTerm()"
-            placeholder="Search by batch name (min. 3 characters)..."
+            (ngModelChange)="searchTerm.set($event)"
+            placeholder="Search by batch name"
             class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-gray-900 font-noto-sans focus:outline-0 focus:ring-0 border-none focus:border-none h-full placeholder:text-gray-600 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
             [disabled]="isLoading()"
           />
         </div>
       </label>
     </div>
-    
+
     <!-- Filters Section -->
     <div class="px-6 py-4">
       <!-- Dropdowns Container -->

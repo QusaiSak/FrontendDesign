@@ -136,7 +136,7 @@ export class StudentComponent implements OnInit {
       } else if (keyToLoad === 'hubName' && parentIdValue != null) {
         const hubs = await firstValueFrom(this.dataService.getHubData(parentIdValue));
         if (Array.isArray(hubs)) {
-          options = hubs.map(h => ({ id: h.hubId, name: h.hubName }));
+          options = hubs.map(h => ({ id: h.hubId, name: `${h.hubName} (${h.hubCode ?  h.hubCode : ''})` }));
         } else {
           console.warn(`BatchComponent: Expected array for hubs (parentId: ${parentIdValue}), received:`, hubs);
         }
@@ -235,11 +235,7 @@ export class StudentComponent implements OnInit {
       const semester = this.dropdownOptions()['semesterName'].find(opt => opt.id === currentSelectedFilters['semesterName'])?.name;
 
 
-      const filtersToEmit: FilterData = {
-        ...currentSelectedFilters,
-        examType: 1
-      };
-
+     
       if (courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined)  {
 
         const rawData = await firstValueFrom<any[]>(
@@ -249,26 +245,6 @@ export class StudentComponent implements OnInit {
         console.log('BatchComponent: Received raw data:', rawData);
 
         const processedTableData: StudentRecord[] = rawData.map(item => {
-          // Construct catName
-          let constructedCatName = '';
-          if (item.subjectName && item.subjectCode) {
-            constructedCatName = `${item.subjectName} ${item.subjectCode}`;
-          } else if (item.subjectName) {
-            constructedCatName = item.subjectName;
-          } else if (item.subjectCode) {
-            constructedCatName = item.subjectCode;
-          }
-
-          // Construct schedule
-          let constructedSchedule = '';
-          if (item.examDate && item.fromTime && item.toTime) {
-            constructedSchedule = `${item.examDate} ${item.fromTime} - ${item.toTime}`;
-          } else if (item.examDate && item.fromTime) {
-            constructedSchedule = `${item.examDate} ${item.fromTime}`;
-          } else if (item.examDate) {
-            constructedSchedule = item.examDate;
-          }
-
           return {
             vertical_name: item.verticalName || item.vertical_name,
             hubName: item.hubName,
@@ -277,8 +253,8 @@ export class StudentComponent implements OnInit {
             semester: item.semesterName || item.semester,
             examType: item.examType,
             examCatType: item.examCatType,
-            catName: constructedCatName || item.catName || '',
-            schedule: constructedSchedule || item.schedule || '',
+            catName: `${item.subjectName} ${item.subjectCode || ''}`,
+            schedule: `${item.examDate} ${item.fromTime || ''}`,
             subjectName: item.subjectName,
             subjectCode: item.subjectCode,
             examDate: item.examDate,

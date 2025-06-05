@@ -5,12 +5,16 @@ import { StudentComponent } from './component/Barcode/student/student.component'
 import { LoginComponent } from './component/login/login.component';
 import { StatusComponent } from './component/PostExam/status/status.component';
 import { authGuard } from './guard/auth.guard';
+import { ExamChangeComponent } from './component/PostExam/exam-change/exam-change.component';
+import { UploadComponent } from './component/PostExam/upload/upload.component';
 
 export const routes: Routes = [
   { path: 'envelope', component: EnvelopeComponent, canActivate: [authGuard] },
   { path: 'batch', component: BatchComponent, canActivate: [authGuard] },
   { path: 'student', component: StudentComponent, canActivate: [authGuard] },
   { path: 'status', component: StatusComponent, canActivate: [authGuard] },
+  { path: 'exam' , component: ExamChangeComponent, canActivate: [authGuard] },
+  { path: 'upload' , component: UploadComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent, canActivate: [authGuard] },
   { path: '', redirectTo: '/envelope', pathMatch: 'full' }
 ];

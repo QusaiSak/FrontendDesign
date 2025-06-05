@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
 // import { NgIcon, provideIcons } from '@ng-icons/core';
 // import { heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { firstValueFrom } from 'rxjs';
@@ -12,9 +15,11 @@ import { TableComponent } from '../../table/table.component';
 @Component({
   selector: 'app-status',
   standalone: true,
-  imports: [CommonModule, FormsModule, TableComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TableComponent,MatFormFieldModule, MatDatepickerModule],
   templateUrl: './status.component.html',
   styleUrl: './status.component.css',
+  providers: [provideNativeDateAdapter()],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   // viewProviders: [provideIcons({ heroMagnifyingGlass })]
 })
 export class StatusComponent {
@@ -51,16 +56,12 @@ export class StatusComponent {
 
   selectedFilters = signal<FilterData>({});
   dropdownOptions = signal<{ [key: string]: FilterOption[] }>({});
-  selectedDate = signal<string>(this.formatDate(new Date()));
+  selDate = new FormGroup({
+    startDate : new FormControl(''),
+    endDate : new FormControl(''),
+  })
 
-// Add these new methods to the class
-  private formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
-  }
 
-  onDateChange(date: string) {
-    this.selectedDate.set(date);
-  }
 
   disabledState = computed(() => {
     const disabled: { [key: string]: boolean } = {};
@@ -83,6 +84,8 @@ export class StatusComponent {
     this.dropdownOptions.set(initialOptions);
     this.loadInitialDropdown();
     this.filteredData.set([]);
+
+    // Initialize with today's date
   }
 
 
@@ -205,8 +208,12 @@ export class StatusComponent {
     }
   }
 
-  applyDateFilter(){
-    console.log('Applying date filter:', this.selectedDate());
+
+
+  async applyDateFilter() {
+    if (!this.selDate.valid) return;
+    console.log('Applying date filter:', this.selDate.value);
+
   }
 
   async applyFilters() {
@@ -251,7 +258,6 @@ export class StatusComponent {
 
 
   async clearAll() {
-    this.selectedDate.set(this.formatDate(new Date()));
     this.selectedFilters.set({});
     this.filteredData.set([]);
 
@@ -263,5 +269,4 @@ export class StatusComponent {
 
     await this.loadInitialDropdown();
   }
-
 }

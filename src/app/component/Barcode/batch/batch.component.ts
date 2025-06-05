@@ -186,6 +186,8 @@ export class BatchComponent implements OnInit {
     }
   }
 
+
+
   async applyFilters() {
     this.filteredData.set([]);
 
@@ -202,6 +204,7 @@ export class BatchComponent implements OnInit {
         const rawData = await firstValueFrom<any[]>(
           this.dataService.getfilterdata(verticalId, hubId, courseId, batchId, semester)
         );
+      
 
         const processedTableData: BatchRecord[] = rawData.map(item => ({
           vertical_name: item.verticalName || item.vertical_name,

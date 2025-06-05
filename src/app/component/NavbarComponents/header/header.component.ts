@@ -4,8 +4,8 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowRightOnRectangle } from '@ng-icons/heroicons/outline';
-import { AuthService } from '../../service/auth.service';
-import { User } from '../env.interface';
+import { AuthService } from '../../../service/auth.service';
+import { User } from '../../env.interface';
 
 @Component({
   selector: 'app-header',

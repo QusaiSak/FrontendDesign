@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { environment } from '../environments/environment';
-import { HeaderComponent } from "./component/header/header.component";
-import { TabComponent } from "./component/tab/tab.component";
+import { HeaderComponent } from "./component/NavbarComponents/header/header.component";
+import { TabComponent } from "./component/NavbarComponents/tab/tab.component";
 
 @Component({
   selector: 'app-root',
@@ -36,9 +36,13 @@ export class AppComponent {
       ]
     },
     {
-      name: "Status",
-      routes: "/status",
-      suboption:[]
+      name: "Post Exam",
+      routes: "/upload",
+      suboption:[
+        { name: "Upload Zip", route: "/upload" },
+        { name: "Status" , route: "/status" },
+        { name: "Examinar Change" , route: "/exam" },
+      ]
     },
 
   ];

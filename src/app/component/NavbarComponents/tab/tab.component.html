@@ -22,7 +22,7 @@
                 <button
                   (click)="selectMainItem(item)"
                   [class.text-gray-900]="selectedMainItem === item.name"
-                  class="flex items-center justify-between w-full space-x-1 px-6 py-2 hover:text-[#2D5A95] font-medium"
+                  class="flex items-center min-w-[150px] px-6 py-2 hover:text-[#2D5A95] font-medium"
                 >
                   <span>{{ item.name }}</span>
                   <ng-icon name="heroArrowLeft"  class="w-4 h-4 transform transition-transform"

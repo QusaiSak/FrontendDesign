@@ -3,7 +3,7 @@ import { BatchComponent } from './component/Barcode/batch/batch.component';
 import { EnvelopeComponent } from './component/Barcode/envelope/envelope.component';
 import { StudentComponent } from './component/Barcode/student/student.component';
 import { LoginComponent } from './component/login/login.component';
-import { StatusComponent } from './component/status/status.component';
+import { StatusComponent } from './component/PostExam/status/status.component';
 import { authGuard } from './guard/auth.guard';
 
 export const routes: Routes = [

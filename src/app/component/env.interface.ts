@@ -61,6 +61,7 @@ export interface BatchRecord {
   vertical_name?: string;
   hubId?: number;
   hubName?: string;
+  hubCode?: string;
   courseId?: number;
   courseName?: string;
   batchId?: number;
@@ -69,6 +70,29 @@ export interface BatchRecord {
   examType?: string;
 }
 
+
+export interface StatusRecord {
+  verticalId?: string;
+  vertical_name?: string;
+  hubId?: string;
+  hubName?: string;
+  hubCode?: string;
+  courseId?: string;
+  courseName?: string;
+  catName?: string;
+  batchId?: string;
+  batch_code: string;
+  semester?: string;
+  examType?: string;
+  examCatType?: string;
+  schedule?: Date;
+  questionPaperStatus?: string;
+  envelopeReceived?: string;
+  zipUploadCount?: number;
+  examinerId?: string;
+  examinerName?: string;
+  paperCheckingStatus?: string;
+}
 
 
 export interface User {

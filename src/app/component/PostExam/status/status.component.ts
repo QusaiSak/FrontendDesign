@@ -1,26 +1,26 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
+// import { NgIcon, provideIcons } from '@ng-icons/core';
+// import { heroMagnifyingGlass } from '@ng-icons/heroicons/outline';
 import { firstValueFrom } from 'rxjs';
 import { DataService } from '../../../service/data.service';
-import { DropdownConfig, FilterData, FilterOption, StudentRecord } from '../../env.interface';
-import { TableComponent } from "../../table/table.component";
+import { DropdownConfig, FilterData, FilterOption, StatusRecord } from '../../env.interface';
+import { TableComponent } from '../../table/table.component';
+
 
 @Component({
-  selector: 'app-student',
+  selector: 'app-status',
   standalone: true,
-  imports: [CommonModule,NgIcon,FormsModule, TableComponent],
-  templateUrl: './student.component.html',
-  styleUrl: './student.component.css',
-  viewProviders: [provideIcons({ heroMagnifyingGlass })]
+  imports: [CommonModule, FormsModule, TableComponent],
+  templateUrl: './status.component.html',
+  styleUrl: './status.component.css',
+  // viewProviders: [provideIcons({ heroMagnifyingGlass })]
 })
-
-export class StudentComponent implements OnInit {
+export class StatusComponent {
   private dataService = inject(DataService);
-  filteredData = signal<StudentRecord[]>([])
-  initialData = signal<StudentRecord[]>([]);
+  filteredData = signal<StatusRecord[]>([]);
+  initialData = signal<StatusRecord[]>([]);
   isLoading = signal<boolean>(false);
 
   columns = [
@@ -30,13 +30,18 @@ export class StudentComponent implements OnInit {
     { key: 'catName', label: 'Category Name' },
     { key: 'batch_code', label: 'Batch Name' },
     { key: 'semester', label: 'Semester' },
-    { key: 'examCatType', label: 'Exam Category Type' },
     { key: 'examType', label: 'Exam Type' },
-    { key: 'schedule', label: 'Date/Time' },
-    { key: 'download', label: 'Download' }
+    { key: 'examCatType', label: 'Exam Category' },
+    { key: 'examDate', label: 'Date/Time' },
+    { key: 'questionPaperStatus', label: 'Question Paper Status' },
+    { key: 'envelopeReceived', label: 'Envelope Received' },
+    { key: 'zipUploadCount', label: 'ZIP Upload Count' },
+    { key: 'examinerId', label: 'Examiner ID' },
+    { key: 'examinerName', label: 'Examiner Name' },
+    { key: 'paperCheckingStatus', label: 'Paper Checking Status' }
   ];
 
-  dropdownConfigs: DropdownConfig[] = [
+  dropdownConfigs:DropdownConfig[] = [
     { label: 'Vertical', key: 'vertical_name', idKey: 'verticalId' },
     { label: 'Hub', key: 'hubName', idKey: 'hubId', parentKey: 'vertical_name' },
     { label: 'Course', key: 'courseName', idKey: 'courseId', parentKey: 'hubName' },
@@ -44,11 +49,18 @@ export class StudentComponent implements OnInit {
     { label: 'Semester', key: 'semesterName', parentKey: 'batch_code' },
   ];
 
-  // { label: 'Subject', key: 'catName', parentKey: 'semesterName' },
-  // { label: 'Exam Type', key: 'examType', parentKey: 'catName' }
-  searchTerm = signal<string>('');
   selectedFilters = signal<FilterData>({});
   dropdownOptions = signal<{ [key: string]: FilterOption[] }>({});
+  selectedDate = signal<string>(this.formatDate(new Date()));
+
+// Add these new methods to the class
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
+
+  onDateChange(date: string) {
+    this.selectedDate.set(date);
+  }
 
   disabledState = computed(() => {
     const disabled: { [key: string]: boolean } = {};
@@ -120,8 +132,7 @@ export class StudentComponent implements OnInit {
 
     if (!config) {
       this.isLoading.set(false);
-      console.error(`BatchComponent: Config not found for dropdown key: ${keyToLoad}`);
-      this.dropdownOptions.update(current => ({ ...current, [keyToLoad]: [] })); // Clear options for this key
+      this.dropdownOptions.update(current => ({ ...current, [keyToLoad]: [] }));
       return;
     }
 
@@ -150,7 +161,7 @@ export class StudentComponent implements OnInit {
         } else {
           console.warn(`BatchComponent: Expected array for courses (parentId: ${parentIdValue}), received:`, courses);
         }
-      } else if (keyToLoad === 'batch_code' && parentIdValue != null) { // parentIdValue is courseId
+      } else if (keyToLoad === 'batch_code' && parentIdValue != null) {
         const selectedHubId = this.selectedFilters()['hubName'] as number | undefined;
 
         if (selectedHubId != null) {
@@ -164,7 +175,6 @@ export class StudentComponent implements OnInit {
                 id: b.batchId,
                 name: b.batch_code
               }));
-
           } else {
             console.warn(`BatchComponent: Expected an array of batches for hubId ${selectedHubId}, but received:`, rawBatches);
           }
@@ -182,36 +192,10 @@ export class StudentComponent implements OnInit {
         } else {
           console.warn(`BatchComponent: Expected array for semesters (parentId: ${selectedBatchId}), received:`, semesters);
         }
-      } else if (keyToLoad === 'catName' && parentIdValue != null) {
-        const currentSelectedFilters = this.selectedFilters();
-        const verticalId = currentSelectedFilters['vertical_name'];
-        const hubId = currentSelectedFilters['hubName'];
-        const courseId = currentSelectedFilters['courseName'];
-        const batchId = currentSelectedFilters['batch_code'];
-        const semester = this.dropdownOptions()['semesterName'].find(opt => opt.id === currentSelectedFilters['semesterName'])?.name;
-        if (courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined){
-          const rawData = await firstValueFrom<any[]>(
-            this.dataService.getfilterSubject(verticalId, hubId, courseId, batchId, semester)
-          );
-          if (Array.isArray(rawData)) {
-            options = rawData.map(item => ({
-              id: item.subjectId,
-              name: `${item.subjectName} ${item.subjectCode || ''}`
-            }));
-          } else {
-            console.warn(`BatchComponent: Expected an array of subjects for courseId ${courseId}, but received:`, rawData);
-          }
-        } else {
-          console.warn("BatchComponent: Cannot load subjects because some required filters are missing.");
-        }
-
       }
-
-      // Add other 'else if' blocks here for other dropdowns if needed
-``
       this.dropdownOptions.update(current => ({
         ...current,
-        [keyToLoad]: options // options will be empty if issues occurred
+        [keyToLoad]: options
       }));
     } catch (error) {
       console.error(`BatchComponent: Error loading options for ${keyToLoad} (parentIdValue: ${parentIdValue}):`, error);
@@ -221,20 +205,20 @@ export class StudentComponent implements OnInit {
     }
   }
 
+  applyDateFilter(){
+    console.log('Applying date filter:', this.selectedDate());
+  }
+
   async applyFilters() {
-    this.isLoading.set(true);
     this.filteredData.set([]);
 
     try {
       const currentSelectedFilters = this.selectedFilters();
-      const courseId = currentSelectedFilters['courseName'];
-      const batchId = currentSelectedFilters['batch_code'];
-      // const subjectId = currentSelectedFilters['catName'];
       const verticalId = currentSelectedFilters['vertical_name'];
       const hubId = currentSelectedFilters['hubName'];
+      const courseId = currentSelectedFilters['courseName'];
+      const batchId = currentSelectedFilters['batch_code'];
       const semester = this.dropdownOptions()['semesterName'].find(opt => opt.id === currentSelectedFilters['semesterName'])?.name;
-
-
 
       if (courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined)  {
 
@@ -242,40 +226,32 @@ export class StudentComponent implements OnInit {
           this.dataService.getpdfdata(verticalId, hubId, courseId, batchId, semester)
         );
 
-        console.log('BatchComponent: Received raw data:', rawData);
 
-        const processedTableData: StudentRecord[] = rawData.map(item => {
-          return {
-            vertical_name: item.verticalName || item.vertical_name,
-            hubName: item.hubName,
-            courseName: item.courseName,
-            batch_code: item.batchCode || item.batch_code,
-            semester: item.semesterName || item.semester,
-            examType: item.examType,
-            examCatType: item.examCatType,
-            catName: `${item.subjectName} ${item.subjectCode || ''}`,
-            schedule: `${item.examDate} ${item.fromTime || ''}`,
-            subjectName: item.subjectName,
-            subjectCode: item.subjectCode,
-            examDate: item.examDate,
-            fromTime: item.fromTime,
-            toTime: item.toTime
-          };
-        });
+        const processedTableData: StatusRecord[] = rawData.map(item => ({
+          vertical_name: item.verticalName || item.vertical_name,
+          hubName: `${item.hubName} (${item.hubCode ? item.hubCode : ''})`,
+          courseName: `${item.courseName}${item.courseCode ? ' - ' + item.courseCode : ''}`,
+          batch_code: item.batchCode || item.batch_code,
+          semester: item.semesterName || item.semester,
+        }));
 
         this.filteredData.set(processedTableData);
       }
     } catch (error) {
       console.error('Error during applyFilters or PDF generation:', error);
+
       this.filteredData.set([]);
+
     } finally {
       this.isLoading.set(false);
     }
   }
 
-  
+
+
+
   async clearAll() {
-    this.searchTerm.set('');
+    this.selectedDate.set(this.formatDate(new Date()));
     this.selectedFilters.set({});
     this.filteredData.set([]);
 
@@ -287,41 +263,5 @@ export class StudentComponent implements OnInit {
 
     await this.loadInitialDropdown();
   }
-  onFilteredDataChange(event: { data: StudentRecord[], filters: any, search: string }) {
 
-    if (event && Array.isArray(event.data) && event.data.length > 0) {
-      const processedData = event.data.map((item, index) => {
-
-        // Construct catName
-        let constructedCatName = '';
-        if (item.subjectName && item.subjectCode) {
-          constructedCatName = `${item.subjectName} ${item.subjectCode}`;
-        } else if (item.subjectName) {
-          constructedCatName = item.subjectName;
-        } else if (item.subjectCode) {
-          constructedCatName = item.subjectCode;
-        }
-
-        let constructedSchedule = '';
-        if (item.examDate && item.fromTime) {
-          constructedSchedule = `${item.examDate} ${item.fromTime}`;
-        } else if (item.examDate && item.fromTime) { // Fallback if toTime is missing
-            constructedSchedule = `${item.examDate} ${item.fromTime}`;
-        } else if (item.examDate) { // Fallback if only date is present
-          constructedSchedule = item.examDate;
-        }
-
-        const processedItem = {
-          ...item,
-          catName: constructedCatName || item.catName || '',
-          schedule: constructedSchedule || item.schedule || ''
-        };
-
-        return processedItem;
-      });
-      this.filteredData.set(processedData);
-    } else {
-      this.filteredData.set([]);
-    }
-  }
 }

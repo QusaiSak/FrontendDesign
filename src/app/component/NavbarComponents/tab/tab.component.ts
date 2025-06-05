@@ -3,7 +3,7 @@ import { Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { heroArrowLeft, heroBars3 } from '@ng-icons/heroicons/outline';
-import { AuthService } from '../../service/auth.service';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   selector: 'app-tab',

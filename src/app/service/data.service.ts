@@ -160,7 +160,7 @@ export class DataService {
     );
   }
 
-  
+
 
   // getfilteredStudentData(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string,subjectId:number): Observable<any> {
   //   return this.http.get<{ status: number; message: string; data: any[] }>(
@@ -170,21 +170,21 @@ export class DataService {
   //   );
   // }
 
-  // getXLSstudentData(courseId:number,batchId:number,subjectId:number): Observable<any> {
-  //   return this.http.get<{ status: number; message: string; data: any[] }>(
-  //     `${this.baseUrl}/courses/GetStudentsXls?courseId=${courseId}&batchId=${batchId}&subjectId=${subjectId}`
-  //   ).pipe(
-  //     map(response => response.data)
-  //   );
-  // }
+  getXLSstudentData(courseId:number,batchId:number,subjectId:number): Observable<any> {
+    return this.http.get<{ status: number; message: string; data: any[] }>(
+      `${this.baseUrl}/courses/GetStudentsXls?courseId=${courseId}&batchId=${batchId}&subjectId=${subjectId}`
+    ).pipe(
+      map(response => response.data)
+    );
+  }
 
-  // getXLSbatchdata(verticalId:number,hubId:number,courseId:number): Observable<any> {
-  //   return this.http.get<{ status: number; message: string; data: any[] }>(
-  //     `${this.baseUrl}/courses/GetBatchesXls?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}`
-  //   ).pipe(
-  //     map(response => response.data)
-  //   );
-  // }
+  getXLSbatchdata(verticalId:number,hubId:number,courseId:number): Observable<any> {
+    return this.http.get<{ status: number; message: string; data: any[] }>(
+      `${this.baseUrl}/courses/GetBatchesXls?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}`
+    ).pipe(
+      map(response => response.data)
+    );
+  }
 
   getpdfdata(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
     return this.http.get<{ status: number; message: string; data: any[] }>(

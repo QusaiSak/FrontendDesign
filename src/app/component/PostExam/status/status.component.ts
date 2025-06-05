@@ -37,7 +37,7 @@ export class StatusComponent {
     { key: 'semester', label: 'Semester' },
     { key: 'examType', label: 'Exam Type' },
     { key: 'examCatType', label: 'Exam Category' },
-    { key: 'examDate', label: 'Date/Time' },
+    { key: 'examDate', label: 'Schedule' },
     { key: 'questionPaperStatus', label: 'Question Paper Status' },
     { key: 'envelopeReceived', label: 'Envelope Received' },
     { key: 'zipUploadCount', label: 'ZIP Upload Count' },
@@ -238,8 +238,11 @@ export class StatusComponent {
           vertical_name: item.verticalName || item.vertical_name,
           hubName: `${item.hubName} (${item.hubCode ? item.hubCode : ''})`,
           courseName: `${item.courseName}${item.courseCode ? ' - ' + item.courseCode : ''}`,
+          catName: `${item.subjectName} ${item.subjectCode ? ' - ' + item.subjectCode : ''}`,
           batch_code: item.batchCode || item.batch_code,
           semester: item.semesterName || item.semester,
+          examType: item.examType,
+          examDate: `${item.examDate} ${item.fromTime ? item.fromTime : ''} - ${item.toTime ? item.toTime : ''}`,
         }));
 
         this.filteredData.set(processedTableData);
@@ -260,6 +263,7 @@ export class StatusComponent {
   async clearAll() {
     this.selectedFilters.set({});
     this.filteredData.set([]);
+    this.selDate.reset();
 
     const initialOptions: { [key: string]: FilterOption[] } = {};
     this.dropdownConfigs.forEach(config => {

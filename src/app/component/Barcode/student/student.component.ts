@@ -273,7 +273,7 @@ export class StudentComponent implements OnInit {
     }
   }
 
-  
+
   async clearAll() {
     this.searchTerm.set('');
     this.selectedFilters.set({});
@@ -286,42 +286,5 @@ export class StudentComponent implements OnInit {
     this.dropdownOptions.set(initialOptions);
 
     await this.loadInitialDropdown();
-  }
-  onFilteredDataChange(event: { data: StudentRecord[], filters: any, search: string }) {
-
-    if (event && Array.isArray(event.data) && event.data.length > 0) {
-      const processedData = event.data.map((item, index) => {
-
-        // Construct catName
-        let constructedCatName = '';
-        if (item.subjectName && item.subjectCode) {
-          constructedCatName = `${item.subjectName} ${item.subjectCode}`;
-        } else if (item.subjectName) {
-          constructedCatName = item.subjectName;
-        } else if (item.subjectCode) {
-          constructedCatName = item.subjectCode;
-        }
-
-        let constructedSchedule = '';
-        if (item.examDate && item.fromTime) {
-          constructedSchedule = `${item.examDate} ${item.fromTime}`;
-        } else if (item.examDate && item.fromTime) { // Fallback if toTime is missing
-            constructedSchedule = `${item.examDate} ${item.fromTime}`;
-        } else if (item.examDate) { // Fallback if only date is present
-          constructedSchedule = item.examDate;
-        }
-
-        const processedItem = {
-          ...item,
-          catName: constructedCatName || item.catName || '',
-          schedule: constructedSchedule || item.schedule || ''
-        };
-
-        return processedItem;
-      });
-      this.filteredData.set(processedData);
-    } else {
-      this.filteredData.set([]);
-    }
   }
 }

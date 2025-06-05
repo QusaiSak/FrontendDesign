@@ -254,15 +254,6 @@ export class EnvelopeComponent implements OnInit {
     await this.loadInitialDropdown();
   }
 
-
-  onFilteredDataChange(event: { data: EnvelopeRecord[], filters: any, search: string }) {
-    if (event && Array.isArray(event.data)) {
-      this.filteredData.set(event.data);
-    } else {
-      this.filteredData.set([]);
-    }
-  }
-
   async onTableAction(event: { action: string, item: any }) {
     if (event.action === 'view') {
       const currentSelectedFilters = this.selectedFilters();

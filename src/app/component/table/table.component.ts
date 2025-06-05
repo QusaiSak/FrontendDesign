@@ -43,9 +43,7 @@ export class TableComponent {
   }
 
   // Add this method to handle filter changes
-  onFilterChange(filterData: any) {
+  onFilterChange() {
     this.showTable.set(true);
-    // Update table data based on filters
-    // Your filtering logic here
   }
 }

@@ -36,7 +36,7 @@
         @for (config of dropdownConfigs; track config.key) {
           <div class="relative w-full">
             <select
-              class="peer w-full h-10 px-2 border-[1px] rounded-xl text-sm font-medium text-gray-900 appearance-none focus:outline-none focus:ring-0 disabled:bg-gray-100 disabled:text-gray-400"
+              class="peer w-full h-10 px-2 border-[1px] rounded-md text-sm font-medium text-gray-900 appearance-none focus:outline-none focus:ring-0 disabled:bg-gray-100 disabled:text-gray-400"
               [ngModel]="selectedFilters()[config.key]"
               (ngModelChange)="onFilterChange(config.key, $event)"
               [disabled]="disabledState()[config.key] || isLoading()"

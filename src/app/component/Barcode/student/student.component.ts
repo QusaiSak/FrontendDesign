@@ -22,6 +22,7 @@ export class StudentComponent implements OnInit {
   filteredData = signal<StudentRecord[]>([])
   initialData = signal<StudentRecord[]>([]);
   isLoading = signal<boolean>(false);
+  private verticalOptions = signal<FilterOption[]>([]);
 
   columns = [
     { key: 'vertical_name', label: 'Vertical Name' },
@@ -127,12 +128,17 @@ export class StudentComponent implements OnInit {
 
     try {
       if (keyToLoad === 'vertical_name') {
-        const verticals = await firstValueFrom(this.dataService.getVerticalData());
-        if (Array.isArray(verticals)) {
-          options = verticals.map(v => ({ id: v.verticalId, name: v.vertical_name }));
-        } else {
-          console.warn(`BatchComponent: Expected array for verticals, received:`, verticals);
+        if (this.verticalOptions().length === 0) {
+          const verticals = await firstValueFrom(this.dataService.getVerticalData());
+          if (Array.isArray(verticals)) {
+            this.verticalOptions.set(
+              verticals.map(v => ({ id: v.verticalId, name: v.vertical_name }))
+            );
+          } else {
+            console.warn(`BatchComponent: Expected array for verticals, received:`, verticals);
+          }
         }
+        options = this.verticalOptions();
       } else if (keyToLoad === 'hubName' && parentIdValue != null) {
         const hubs = await firstValueFrom(this.dataService.getHubData(parentIdValue));
         if (Array.isArray(hubs)) {
@@ -191,7 +197,7 @@ export class StudentComponent implements OnInit {
         const semester = this.dropdownOptions()['semesterName'].find(opt => opt.id === currentSelectedFilters['semesterName'])?.name;
         if (courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined){
           const rawData = await firstValueFrom<any[]>(
-            this.dataService.getfilterSubject(verticalId, hubId, courseId, batchId, semester)
+            this.dataService.getFilterSubject(verticalId, hubId, courseId, batchId, semester)
           );
           if (Array.isArray(rawData)) {
             options = rawData.map(item => ({
@@ -239,7 +245,7 @@ export class StudentComponent implements OnInit {
       if (courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined)  {
 
         const rawData = await firstValueFrom<any[]>(
-          this.dataService.getpdfdata(verticalId, hubId, courseId, batchId, semester)
+          this.dataService.getPdfData(verticalId, hubId, courseId, batchId, semester)
         );
 
         console.log('BatchComponent: Received raw data:', rawData);
@@ -278,13 +284,13 @@ export class StudentComponent implements OnInit {
     this.searchTerm.set('');
     this.selectedFilters.set({});
     this.filteredData.set([]);
-
-    const initialOptions: { [key: string]: FilterOption[] } = {};
-    this.dropdownConfigs.forEach(config => {
-      initialOptions[config.key] = [];
-    });
-    this.dropdownOptions.set(initialOptions);
-
-    await this.loadInitialDropdown();
+    // Keep vertical options, reset others
+    this.dropdownOptions.update(current => ({
+      ...Object.fromEntries(
+        Object.entries(current).map(([key, value]) =>
+          [key, key === 'vertical_name' ? value : []]
+        )
+      )
+    }));
   }
 }

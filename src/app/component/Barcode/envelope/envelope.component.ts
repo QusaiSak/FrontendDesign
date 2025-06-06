@@ -22,6 +22,7 @@ export class EnvelopeComponent implements OnInit {
   filteredData = signal<EnvelopeRecord[]>([])
   initialData = signal<EnvelopeRecord[]>([]);
   isLoading = signal<boolean>(false);
+  private verticalOptions = signal<FilterOption[]>([]);
 
 
   columns = [
@@ -124,12 +125,18 @@ export class EnvelopeComponent implements OnInit {
 
     try {
       if (keyToLoad === 'vertical_name') {
-        const verticals = await firstValueFrom(this.dataService.getVerticalData());
-        if (Array.isArray(verticals)) {
-          options = verticals.map(v => ({ id: v.verticalId, name: v.vertical_name }));
-        } else {
-          console.warn(`BatchComponent: Expected array for verticals, received:`, verticals);
+        // Check if we already have vertical data
+        if (this.verticalOptions().length === 0) {
+          const verticals = await firstValueFrom(this.dataService.getVerticalData());
+          if (Array.isArray(verticals)) {
+            this.verticalOptions.set(
+              verticals.map(v => ({ id: v.verticalId, name: v.vertical_name }))
+            );
+          } else {
+            console.warn(`BatchComponent: Expected array for verticals, received:`, verticals);
+          }
         }
+        options = this.verticalOptions();
       } else if (keyToLoad === 'hubName' && parentIdValue != null) {
         const hubs = await firstValueFrom(this.dataService.getHubData(parentIdValue));
         if (Array.isArray(hubs)) {
@@ -205,16 +212,11 @@ export class EnvelopeComponent implements OnInit {
       const batchId = currentSelectedFilters['batch_code'];
       const semester = this.dropdownOptions()['semesterName'].find(opt => opt.id === currentSelectedFilters['semesterName'])?.name;
 
-      const filtersToEmit: FilterData = {
-        ...currentSelectedFilters,
-        examType: 1
-      };
-
       if (courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined)  {
         console.log(`Service call with Course ID: ${courseId}, Batch ID: ${batchId}`);
 
         const rawData = await firstValueFrom<any[]>(
-          this.dataService.getfilterdata(verticalId, hubId, courseId, batchId, semester)
+          this.dataService.getFilterDataEnvBatch(verticalId, hubId, courseId, batchId, semester)
         );
 
         console.log('BatchComponent: Received raw data:', rawData);
@@ -245,13 +247,14 @@ export class EnvelopeComponent implements OnInit {
     this.selectedFilters.set({});
     this.filteredData.set([]);
 
-    const initialOptions: { [key: string]: FilterOption[] } = {};
-    this.dropdownConfigs.forEach(config => {
-      initialOptions[config.key] = [];
-    });
-    this.dropdownOptions.set(initialOptions);
-
-    await this.loadInitialDropdown();
+    // Keep vertical options, reset others
+    this.dropdownOptions.update(current => ({
+      ...Object.fromEntries(
+        Object.entries(current).map(([key, value]) =>
+          [key, key === 'vertical_name' ? value : []]
+        )
+      )
+    }));
   }
 
   async onTableAction(event: { action: string, item: any }) {
@@ -263,7 +266,7 @@ export class EnvelopeComponent implements OnInit {
       const batchId = currentSelectedFilters['batch_code'];
       const semester = this.dropdownOptions()['semesterName'].find(opt => opt.id === currentSelectedFilters['semesterName'])?.name;
       if(courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined){
-      const data = await firstValueFrom(this.dataService.getpdfdata(verticalId,hubId,courseId,batchId,semester))
+      const data = await firstValueFrom(this.dataService.getPdfData(verticalId,hubId,courseId,batchId,semester))
       this.downloadPdf(data)
       }
     }
@@ -273,7 +276,7 @@ export class EnvelopeComponent implements OnInit {
     const currentSelectedFilters = this.selectedFilters();
     const batchCode = this.dropdownOptions()['batch_code'].find(opt => opt.id === currentSelectedFilters['batch_code'])?.name;
     this.isLoading.set(true);
-    this.dataService.makepdf(item).subscribe({
+    this.dataService.makePdf(item).subscribe({
       next: (blob: Blob) => {
         this.isLoading.set(false);
         const blobUrl = window.URL.createObjectURL(blob);

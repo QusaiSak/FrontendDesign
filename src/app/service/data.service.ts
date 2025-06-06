@@ -78,7 +78,7 @@ export interface FilterData {
 })
 export class DataService {
   private http = inject(HttpClient);
-  private baseUrl = environment.apiUrl;
+  private baseUrl = environment.testUrl;
   // http://192.168.0.137:5002/api
   // https://tiss.offee.in/integration
   constructor() { }
@@ -144,7 +144,7 @@ export class DataService {
   }
 
 
-  getfilterSubject(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
+  getFilterSubject(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
     return this.http.get<{ status: number; message: string; data: any[] }>(
       `${this.baseUrl}/courses/GetSubjects4Filter?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}&batchId=${batchId}&semester=${semester}`
     ).pipe(
@@ -152,7 +152,7 @@ export class DataService {
     );
   }
 
-  getfilterdata(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
+  getFilterDataEnvBatch(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
     return this.http.get<{ status: number; message: string; data: any[] }>(
       `${this.baseUrl}/courses/GetEnvelopeData?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}&batchId=${batchId}&semester=${semester}`
     ).pipe(
@@ -170,7 +170,7 @@ export class DataService {
   //   );
   // }
 
-  getXLSstudentData(courseId:number,batchId:number,subjectId:number): Observable<any> {
+  getXlsStudentData(courseId:number,batchId:number,subjectId:number): Observable<any> {
     return this.http.get<{ status: number; message: string; data: any[] }>(
       `${this.baseUrl}/courses/GetStudentsXls?courseId=${courseId}&batchId=${batchId}&subjectId=${subjectId}`
     ).pipe(
@@ -178,7 +178,7 @@ export class DataService {
     );
   }
 
-  getXLSbatchdata(verticalId:number,hubId:number,courseId:number): Observable<any> {
+  getXlsBatchData(verticalId:number,hubId:number,courseId:number): Observable<any> {
     return this.http.get<{ status: number; message: string; data: any[] }>(
       `${this.baseUrl}/courses/GetBatchesXls?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}`
     ).pipe(
@@ -186,7 +186,7 @@ export class DataService {
     );
   }
 
-  getpdfdata(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
+  getPdfData(verticalId:number,hubId:number,courseId:number,batchId:number,semester:string): Observable<any> {
     return this.http.get<{ status: number; message: string; data: any[] }>(
       `${this.baseUrl}/courses/GetSubjects4PDF?verticalId=${verticalId}&hubId=${hubId}&courseId=${courseId}&batchId=${batchId}&semester=${semester}`
     ).pipe(
@@ -194,8 +194,11 @@ export class DataService {
     );
   }
 
-  makepdf(data: any): Observable<Blob> {
+  makePdf(data: any): Observable<Blob> {
     return this.http.post(`${this.baseUrl}/generate-pdf`, { forms: data }, { responseType: 'blob' });
+  }
+  uploadZipFile (formData: FormData) {
+    return this.http.put(`${this.baseUrl}/uploads/studentsScannedPdsZip`, formData);
   }
 
 }

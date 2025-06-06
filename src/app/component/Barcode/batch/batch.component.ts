@@ -21,6 +21,7 @@ export class BatchComponent implements OnInit {
   filteredData = signal<BatchRecord[]>([]);
   initialData = signal<BatchRecord[]>([]);
   isLoading = signal<boolean>(false);
+  private verticalOptions = signal<FilterOption[]>([]);
 
   columns = [
     { key: 'vertical_name', label: 'Vertical Name' },
@@ -119,12 +120,20 @@ export class BatchComponent implements OnInit {
 
     try {
       if (keyToLoad === 'vertical_name') {
-        const verticals = await firstValueFrom(this.dataService.getVerticalData());
-        if (Array.isArray(verticals)) {
-          options = verticals.map(v => ({ id: v.verticalId, name: v.vertical_name }));
-        } else {
-          console.warn(`BatchComponent: Expected array for verticals, received:`, verticals);
+        // Check if we already have vertical data
+        if (this.verticalOptions().length === 0) {
+          // Only load from API if we don't have the data
+          const verticals = await firstValueFrom(this.dataService.getVerticalData());
+          if (Array.isArray(verticals)) {
+            this.verticalOptions.set(
+              verticals.map(v => ({ id: v.verticalId, name: v.vertical_name }))
+            );
+          } else {
+            console.warn(`BatchComponent: Expected array for verticals, received:`, verticals);
+          }
         }
+        // Use stored vertical options
+        options = this.verticalOptions();
       } else if (keyToLoad === 'hubName' && parentIdValue != null) {
         const hubs = await firstValueFrom(this.dataService.getHubData(parentIdValue));
         if (Array.isArray(hubs)) {
@@ -202,9 +211,9 @@ export class BatchComponent implements OnInit {
       if (courseId !== null && courseId !== undefined && batchId !== null && batchId !== undefined && verticalId !== null && verticalId !== undefined && hubId !== null && hubId !== undefined && semester !== null && semester !== undefined)  {
 
         const rawData = await firstValueFrom<any[]>(
-          this.dataService.getfilterdata(verticalId, hubId, courseId, batchId, semester)
+          this.dataService.getFilterDataEnvBatch(verticalId, hubId, courseId, batchId, semester)
         );
-      
+
 
         const processedTableData: BatchRecord[] = rawData.map(item => ({
           vertical_name: item.verticalName || item.vertical_name,
@@ -234,14 +243,14 @@ export class BatchComponent implements OnInit {
     this.selectedFilters.set({});
     this.filteredData.set([]);
 
-    const initialOptions: { [key: string]: FilterOption[] } = {};
-    this.dropdownConfigs.forEach(config => {
-      initialOptions[config.key] = [];
-    });
-    this.dropdownOptions.set(initialOptions);
-
-    await this.loadInitialDropdown();
+    // Keep vertical options, reset others
+    this.dropdownOptions.update(current => ({
+      ...Object.fromEntries(
+        Object.entries(current).map(([key, value]) =>
+          [key, key === 'vertical_name' ? value : []]
+        )
+      )
+    }));
   }
-
 
 }

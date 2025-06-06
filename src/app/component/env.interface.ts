@@ -94,6 +94,28 @@ export interface StatusRecord {
   paperCheckingStatus?: string;
 }
 
+export interface StudentRecNew {
+  studentCode: string;
+  studentName: string;
+  serialNo?: number;
+}
+
+export interface MetaData {
+  verticalName: string;
+  hubName: string;
+  examName: string;
+  batchName: string;
+}
+
+export interface UploadResponse {
+  status: number;
+  message: string;
+  data?: {
+    metaData: MetaData;
+    uploadedStudents: StudentRecNew[];
+    studentsNotFound: StudentRecNew[];
+  };
+}
 
 export interface User {
   id:number;

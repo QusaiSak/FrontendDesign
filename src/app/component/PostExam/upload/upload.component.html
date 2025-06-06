@@ -1,1 +1,84 @@
-<p>upload works!</p>
+<div class="px-5 py-3 bg-gray-50 min-h-screen">
+  <div class="container">
+    <!-- Header -->
+    <div class="px-6 py-4">
+      <h1 class="text-2xl font-semibold text-gray-900">Upload Student</h1>
+    </div>
+
+    <!-- Upload Section -->
+    <div class="px-6 py-4">
+      <div class="flex items-center justify-between gap-4 flex-wrap">
+        <div class="flex justify-start gap-4 max-w-[600px] items-center border-[1px] border-gray-200 rounded-lg">
+          <input
+            #fileInput
+            type="file"
+            accept=".zip"
+            (change)="seletedZipFile($event)"
+            class="file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0
+                  file:text-sm file:font-semibold file:bg-[#2D5A95]/10
+                  file:text-[#2D5A95] hover:file:bg-[#2D5A95]/20
+                  cursor-pointer"
+          >
+          <button
+            [disabled]="savingInProgress() || !selectedZip"
+            (click)="submit()"
+            class="h-11 px-4 bg-[#2D5A95] text-white rounded-lg hover:bg-[#2D5A95]/90
+                  transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                  flex items-center gap-2 whitespace-nowrap shadow-sm"
+          >
+            <span>Upload Files</span>
+            <span
+              *ngIf="savingInProgress()"
+              class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+              role="status">
+            </span>
+          </button>
+        </div>
+        <div class="text-sm text-gray-500">{{message()}}</div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="showDataSection()">
+      <!-- Metadata Card -->
+      <div class="px-6 py-4">
+        <div class="flex flex-col p-6 gap-4 rounded-xl border border-gray-200 bg-white">
+          <h2 class="text-lg font-semibold text-gray-900">Students mapped in</h2>
+
+          <div class="grid gap-4 w-full">
+            @for (field of metadataFields; track field.key) {
+              <div class="flex items-center gap-4">
+                <span class="w-[120px] text-gray-600 font-medium">{{field.label}}:</span>
+                <span class="text-sm text-gray-900">{{studentsMapped()[field.key]}}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Tables Section -->
+      <div class="px-6 py-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Uploaded Students Table -->
+          <div class="flex flex-col">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Uploaded Students</h3>
+            <app-table
+              [data]="studentsListWithSerial()"
+              [columns]="studentColumns"
+              cellPadding="px-4 py-3"
+            ></app-table>
+          </div>
+
+          <!-- Missing Students Table -->
+          <div class="flex flex-col" *ngIf="studentsMissedWithSerial().length > 0">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Missing Students</h3>
+            <app-table
+              [data]="studentsMissedWithSerial()"
+              [columns]="studentColumns"
+              cellPadding="px-4 py-3"
+            ></app-table>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

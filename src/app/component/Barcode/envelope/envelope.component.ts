@@ -274,15 +274,16 @@ export class EnvelopeComponent implements OnInit {
 
   downloadPdf(item: EnvelopeRecord): void {
     const currentSelectedFilters = this.selectedFilters();
-    const batchCode = this.dropdownOptions()['batch_code'].find(opt => opt.id === currentSelectedFilters['batch_code'])?.name;
+    const batchCode = this.dropdownOptions()['batch_code'].find(opt => opt.id === currentSelectedFilters['batch_code'])?.name || 'document';
     this.isLoading.set(true);
+
     this.dataService.makePdf(item).subscribe({
       next: (blob: Blob) => {
         this.isLoading.set(false);
         const blobUrl = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = blobUrl;
-        a.download = `${batchCode}.pdf`;
+        a.download = `${batchCode}.pdf`; // Use safe batchCode
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -291,7 +292,6 @@ export class EnvelopeComponent implements OnInit {
       error: (err) => {
         this.isLoading.set(false);
         console.error('Failed to download PDF:', err);
-        alert('Failed to generate PDF. Please try again.');
       }
     });
   }

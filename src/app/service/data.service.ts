@@ -78,7 +78,7 @@ export interface FilterData {
 })
 export class DataService {
   private http = inject(HttpClient);
-  private baseUrl = environment.testUrl;
+  private baseUrl = environment.apiUrl;
   // http://192.168.0.137:5002/api
   // https://tiss.offee.in/integration
   constructor() { }
